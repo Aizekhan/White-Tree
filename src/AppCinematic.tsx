@@ -6,19 +6,51 @@ import { Brain, Clapperboard, Camera, Sparkles, BookOpen } from 'lucide-react';
 import ImmersiveStoryEntry from './features/universe/ImmersiveStoryEntry';
 import UniverseBrainView from './features/universe/UniverseBrainView';
 import CinematicWorkspace from './features/workspace/CinematicWorkspace';
+import ContextualWritingWorkspace from './features/universe/ContextualWritingWorkspace';
 
 type View = 'immersive' | 'universe' | 'production';
 
+interface SceneContext {
+  id: number;
+  title: string;
+  act: string;
+  location: string;
+  timeOfDay: string;
+  pov: string;
+  visualMood: string;
+  atmosphericColor: string;
+  storyText: string;
+  aiShowrunner: {
+    emotional: string;
+    narrative: string;
+    tension: string;
+  };
+}
+
 const VIEWS = [
-  { id: 'immersive' as const, icon: Sparkles, label: 'Story', component: ImmersiveStoryEntry },
-  { id: 'universe' as const, icon: Brain, label: 'Intelligence', component: UniverseBrainView },
-  { id: 'production' as const, icon: Clapperboard, label: 'Production', component: CinematicWorkspace },
+  { id: 'immersive' as const, icon: Sparkles, label: 'Story' },
+  { id: 'universe' as const, icon: Brain, label: 'Intelligence' },
+  { id: 'production' as const, icon: Clapperboard, label: 'Production' },
 ];
 
 export default function AppCinematic() {
   const [activeView, setActiveView] = useState<View>('immersive');
+  const [writingMode, setWritingMode] = useState(false);
+  const [activeScene, setActiveScene] = useState<SceneContext | null>(null);
 
-  const CurrentView = VIEWS.find(v => v.id === activeView)?.component || UniverseBrainView;
+  const handleEnterScene = (scene: SceneContext) => {
+    setActiveScene(scene);
+    setWritingMode(true);
+  };
+
+  const handleBackToImmersion = () => {
+    setWritingMode(false);
+  };
+
+  // If in writing mode, show contextual workspace
+  if (writingMode && activeScene) {
+    return <ContextualWritingWorkspace scene={activeScene} onBack={handleBackToImmersion} />;
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
@@ -44,7 +76,9 @@ export default function AppCinematic() {
       </nav>
 
       {/* View Content */}
-      <CurrentView />
+      {activeView === 'immersive' && <ImmersiveStoryEntry onEnterScene={handleEnterScene} />}
+      {activeView === 'universe' && <UniverseBrainView />}
+      {activeView === 'production' && <CinematicWorkspace />}
     </div>
   );
 }

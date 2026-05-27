@@ -94,7 +94,11 @@ Elena types faster, overriding safety protocols, pushing Oracle beyond designed 
   }
 ];
 
-export default function ImmersiveStoryEntry() {
+interface ImmersiveStoryEntryProps {
+  onEnterScene?: (scene: typeof STORY_SCENES[0]) => void;
+}
+
+export default function ImmersiveStoryEntry({ onEnterScene }: ImmersiveStoryEntryProps) {
   const [currentSceneIdx, setCurrentSceneIdx] = useState(0);
   const [showAI, setShowAI] = useState(false);
 
@@ -268,6 +272,7 @@ export default function ImmersiveStoryEntry() {
 
           {/* Enter Workspace */}
           <button
+            onClick={() => onEnterScene?.(scene)}
             className="flex items-center gap-2 px-4 py-2 rounded-full bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold transition-all"
           >
             <Play size={16} />
