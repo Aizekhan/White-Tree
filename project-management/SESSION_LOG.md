@@ -87,7 +87,7 @@
 - Tried to create "production control room" when we needed "living universe"
 
 ### 📸 Visual Milestones (Screenshot Commits)
-- Commit: `[pending]` - "feat: immersive story entry experience"
+- Commit: `646de19` - "feat: immersive story entry experience"
 - ImmersiveStoryEntry.tsx: fullscreen atmospheric storytelling
 - Scene navigation with emotional AI narration
 
@@ -138,6 +138,83 @@
 - Still needs: alive AI presence, interconnected universe feeling, magical interactions
 - Must preserve writing core throughout transformation
 - Philosophy: Story Immersion First, then Intelligence, then Production tools
+
+---
+
+## 📅 Session 3: Interactive Narrative Intelligence Breakthrough
+**Date:** 2026-05-27 (continuation)
+**Duration:** ~1.5 hours
+**AI Agent:** Claude Code (Sonnet 4.5)
+**Human:** Aizekhan
+
+### What We Did
+- ✅ Created ContextualWritingWorkspace.tsx (writing mode with persistent atmosphere)
+- ✅ Connected "Enter Scene" button to writing flow
+- ✅ Implemented text selection → contextual AI insights
+- ✅ Added emotional rewrite suggestions (🔥 Більше напруги, 💔 Вразливість, 🌙 Mystery)
+- ✅ Created Narrative Memory panel (unresolved threads, character states, lore, arcs)
+- ✅ Scene context sidebar always visible (location, POV, mood, AI showrunner)
+- ✅ AI whispers appear contextually during writing
+
+### 🎉 WHAT GAVE WOW EFFECT
+- **AI transformed from "tool you invoke" to "narrative presence that exists beside the writer"**
+- Text selection triggers contextual insights: "Згадайте: Dr. Chen залишив encrypted message"
+- Narrative Memory panel shows AI has living awareness: unresolved threads, character emotional states, lore callbacks
+- Atmosphere persists in writing mode (subtle background + pulsing overlay)
+- **This no longer feels like "AI wrapper" - feels like narrative intelligence collaboration**
+- Working proof: Immersive entry → Enter Scene → Contextual writing → AI living presence
+
+### ⚠️ WHAT WAS TIME WASTE
+- None - focused execution on single clear direction (deepen AI presence)
+
+### 📸 Visual Milestones (Screenshot Commits)
+- Commit: `600ea64` - "feat: connect immersive entry to contextual writing workspace"
+- Commit: `d1536cd` - "feat: add interactive narrative intelligence - AI lives in the story"
+- ContextualWritingWorkspace: atmosphere persists + AI sidebar + interactive insights
+
+### Key Decisions Made
+- **AI presence = subtle and alive, NOT aggressive widgets everywhere**
+- Text selection (10+ chars) triggers contextual intelligence
+- Narrative Memory shows: threads, character states, lore, arcs (living story awareness)
+- Emotional rewrites directly on selected text
+- DO NOT add feature overload - foundation proven, now need polish/subtlety
+- Next phase: elegant AI behavior, NOT more panels/widgets
+
+### Code Notes
+- Files created:
+  * `src/features/universe/ContextualWritingWorkspace.tsx` (writing workspace with AI presence) ⭐
+- Files modified:
+  * `src/AppCinematic.tsx` (added writingMode state + scene context flow)
+  * `src/features/universe/ImmersiveStoryEntry.tsx` (onEnterScene callback)
+- Interactive features:
+  * Text selection detection (onMouseUp + onKeyUp)
+  * Contextual insight popup with emotional rewrite buttons
+  * Narrative Memory panel with 4 types: threads, character, lore, arc
+
+### Insights
+- **Breakthrough:** AI stops being "sidebar assistant" and becomes "narrative presence living in story"
+- Text selection + contextual reaction = magical feeling of AI awareness
+- Narrative Memory creates "living universe" feeling - AI remembers everything
+- Subtlety > feature overload - don't clutter with 15 widgets
+- Foundation proven: immersive + writing + AI presence = working storytelling OS
+
+### Blockers / Issues
+- None currently
+
+### Next Steps (Future Sessions)
+1. Polish and subtlety refinement (NOT more features)
+2. Elegant AI behavior tuning
+3. Real Gemini AI integration (replace mock contextual insights)
+4. Consider atmospheric visuals (when ready, not priority)
+5. Test with real user writing flow
+6. Session break - foundation fully proven
+
+### Important Notes
+- **User feedback:** "AI перестає feeling як 'tool you invoke' і починає feeling як narrative presence"
+- This is NOT "черговий AI wrapper" - це інший підхід до storytelling
+- Three core pieces proven: immersive entry + writing flow + AI living presence
+- DO NOT go into feature overload territory - keep elegant and subtle
+- Philosophy: Alive and aware, NOT aggressively everywhere
 
 ---
 
@@ -213,8 +290,9 @@ Copy this for new sessions:
 
 ## 📊 Session Statistics
 
-- **Total Sessions:** 2
-- **Total Hours:** ~5 hours
-- **Lines of Code Changed:** ~1,100 lines
-- **Features Shipped:** 1 (Immersive Story Entry experience)
-- **Current Phase:** Phase 1 - Visual Transformation (Immersive Layer)
+- **Total Sessions:** 3
+- **Total Hours:** ~6.5 hours
+- **Lines of Code Changed:** ~1,400 lines
+- **Features Shipped:** 3 (Immersive Story Entry, Contextual Writing Workspace, Interactive Narrative Intelligence)
+- **Current Phase:** Phase 1 Complete - Foundation Proven ✅
+- **Next Phase:** Polish & Real AI Integration
