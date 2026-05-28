@@ -211,10 +211,71 @@
 
 ### Important Notes
 - **User feedback:** "AI перестає feeling як 'tool you invoke' і починає feeling як narrative presence"
+- **Critical UX insight:** "Sidebar breaks immersion - creates dashboard feeling even in Story mode"
 - This is NOT "черговий AI wrapper" - це інший підхід до storytelling
 - Three core pieces proven: immersive entry + writing flow + AI living presence
 - DO NOT go into feature overload territory - keep elegant and subtle
 - Philosophy: Alive and aware, NOT aggressively everywhere
+- **Final refinement:** Story Mode = fullscreen clean (NO sidebar), Production Mode = tools complexity (sidebar OK)
+
+---
+
+## 📅 Session 4: Fullscreen Immersive Refinement
+**Date:** 2026-05-27 (continuation)
+**Duration:** ~30 minutes
+**AI Agent:** Claude Code (Sonnet 4.5)
+**Human:** Aizekhan
+
+### What We Did
+- ✅ Removed sidebar from Story writing mode
+- ✅ Created fullscreen cinematic writing workspace
+- ✅ Made AI presence subtle (floating, not permanent panels)
+- ✅ Kept Production mode with sidebar (appropriate for tools)
+
+### 🎉 WHAT GAVE WOW EFFECT
+- **Critical UX insight discovered:** Sidebar breaks immersion feeling even with good content
+- Fullscreen writing with minimal floating UI = proper immersive experience
+- Clear separation: Story (emotional/clean) vs Production (tools/complex)
+
+### ⚠️ WHAT WAS TIME WASTE
+- None - quick focused refinement based on clear feedback
+
+### 📸 Visual Milestones (Screenshot Commits)
+- Commit: `76cb516` - "refactor: remove sidebar from Story mode - fullscreen immersive writing"
+- Fullscreen writing workspace without sidebar
+- Minimal floating UI preserves immersion
+
+### Key Decisions Made
+- **Story Mode = NO sidebar** (fullscreen, clean, immersive)
+- **Production Mode = sidebar OK** (appropriate for production tools complexity)
+- Scene context via floating button (optional, not always-on)
+- AI presence through whispers/insights, NOT permanent panels
+
+### Code Notes
+- Files modified:
+  * `src/features/universe/ContextualWritingWorkspace.tsx` (removed sidebar, fullscreen design)
+- Reduced from 278 lines to 184 lines (94 lines removed)
+- Larger text (text-xl), wider padding for cinematic feel
+
+### Insights
+- **Key insight:** Even well-designed sidebar creates "software density" feeling in Story mode
+- Story and Production modes should have DIFFERENT UI complexity levels
+- Immersion requires minimalism - every permanent UI element breaks the spell
+- Floating/optional UI > permanent panels for creative modes
+
+### Blockers / Issues
+- None
+
+### Next Steps (Future Sessions)
+1. Real Gemini AI integration (replace mock insights)
+2. Polish AI behavior timing and triggers
+3. Test with real user writing flow
+4. Consider atmospheric visuals when ready
+
+### Important Notes
+- **Foundation complete:** Immersive entry + Fullscreen writing + AI presence = proven
+- Ready for next phase: real AI integration and polish
+- All code pushed to GitHub branch `feature/cinematic-ui-transformation`
 
 ---
 
@@ -290,9 +351,10 @@ Copy this for new sessions:
 
 ## 📊 Session Statistics
 
-- **Total Sessions:** 3
-- **Total Hours:** ~6.5 hours
-- **Lines of Code Changed:** ~1,400 lines
-- **Features Shipped:** 3 (Immersive Story Entry, Contextual Writing Workspace, Interactive Narrative Intelligence)
+- **Total Sessions:** 4
+- **Total Hours:** ~7 hours
+- **Lines of Code Changed:** ~1,500 lines
+- **Features Shipped:** 4 (Immersive Story Entry, Contextual Writing Workspace, Interactive Narrative Intelligence, Fullscreen Immersive Writing)
 - **Current Phase:** Phase 1 Complete - Foundation Proven ✅
-- **Next Phase:** Polish & Real AI Integration
+- **Next Phase:** Real AI Integration & Polish
+- **Branch:** feature/cinematic-ui-transformation (pushed to GitHub)
