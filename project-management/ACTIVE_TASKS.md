@@ -184,3 +184,87 @@ When adding new tasks:
 
 **Sprint 4:** Jun 5-7
 - Focus: Public demo ready + Landing page
+
+---
+
+## 🎨 Magical Book Entry Prototype (Separate Mini-Project)
+
+**Location:** `E:\White Tree\magical-book-prototype\`
+**Dev Server:** http://localhost:5175
+**Status:** Architecture built, user understanding gap identified
+
+### 🔄 In Progress
+- [ ] **Explain react-pageflip mechanics to user**
+  - [ ] Create simple 20-line example showing basic page flip
+  - [ ] Explain how HTMLFlipBook component works
+  - [ ] Show how to add pages as children
+  - Status: Not Started
+  - Priority: P0 (Critical - user blocked)
+
+### 📋 To Do - P0 (Critical)
+- [ ] **Simplify to MVP**
+  - [ ] Remove complex Framer Motion animations temporarily
+  - [ ] Just: Background + Book image + Page flip + Simple text
+  - [ ] Get basic version working with user understanding
+  - [ ] THEN re-add magic effects one by one with explanations
+  - Status: Not Started
+  - Priority: P0
+
+- [ ] **Collaborative iteration with user**
+  - [ ] User says what they want to change
+  - [ ] AI explains how that part works
+  - [ ] Modify together
+  - [ ] Ensure user understands each change
+  - Status: Not Started
+  - Priority: P0
+
+### 📋 To Do - P1 (After MVP Works)
+- [ ] **Re-add magical effects (with explanations)**
+  - [ ] Ink reveal text animation
+  - [ ] Ambient particles
+  - [ ] Book glow effect
+  - [ ] Generation ritual sequence
+  - [ ] Each with clear explanation of how it works
+  - Status: Not Started
+  - Priority: P1
+
+- [ ] **Integrate into main WhiteWrite**
+  - [ ] Replace Login screen with magical book entry
+  - [ ] Connect book flow to Firebase Auth
+  - [ ] Universe prompt → createProject
+  - Status: Not Started
+  - Priority: P1
+
+### ✅ Completed
+- [x] Create separate mini-project for rapid iteration
+- [x] Install dependencies (react-pageflip, framer-motion, tailwind)
+- [x] User uploaded custom images (back.png, Book.png)
+- [x] Fix Tailwind CSS 4 PostCSS configuration
+- [x] Build LivingBook architecture
+- [x] Create InkRevealText component
+- [x] Create MagicalParticles component
+- [x] Implement spread-based pagination
+- [x] Add "The Last Signal" demo content
+
+### 📝 Files Created
+- `src/components/LivingBook.tsx`
+- `src/components/InkRevealText.tsx`
+- `src/components/MagicalParticles.tsx`
+- `src/App.tsx` (updated with demo)
+- `tailwind.config.js`
+- `postcss.config.js`
+- `index.html` (medieval fonts)
+
+### 📝 User Vision Highlights (Study These!)
+- "Book is NOT a component. It's the entire experience."
+- "Camera slowly moves, pages breathe, dust floats, text writes with ink"
+- "Ink Reveal: faint glow → ink stroke → texture absorption"
+- "Left page = Context/Lore, Right page = Narrative"
+- "One spread = one narrative moment"
+- "AI writes BEFORE text appears: ritual sequence"
+- "This is: ritualized storytelling interface"
+
+### ⚠️ Critical Insight
+- **User needs explanation-first approach, not code-first**
+- Too much abstraction overwhelmed user
+- Next session: Explain → Show simple example → Build together → User understands
