@@ -1,108 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play, Sparkles, User, Moon, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-
-// MOCK: "The Last Signal" story data
-const STORY_SCENES = [
-  {
-    id: 1,
-    title: "The Signal Arrives",
-    act: "Act I",
-    location: "Atacama Observatory",
-    timeOfDay: "Night",
-    pov: "Elena Zhao",
-    visualMood: "🌌",
-    atmosphericColor: "from-indigo-950 via-violet-950 to-black",
-
-    storyText: `The massive radio dish slowly rotates towards Mars, its metal framework creaking against the desert wind. Warning lights blink amber across the control console. Dr. Elena Zhao's fingers hover over the keyboard, her breath visible in the cold observatory air.
-
-The signal — impossible, yet undeniable — pulses across her screen. Twelve minutes ago, something on Mars broke decades of silence.
-
-"Oracle," she whispers to the AI assistant, "confirm signal origin."
-
-The synthetic voice responds, calm but curious: "Confirmed. Mars Colony Zeta. Signal authenticated with legacy encryption keys."
-
-Elena's heart pounds. The colony went dark in 2085. Two years of silence. Two years of questions.
-
-And now, this.`,
-
-    aiShowrunner: {
-      emotional: "Elena feels the weight of isolation here. This is the moment before everything changes.",
-      narrative: "Opening hook establishes mystery effectively. The sensory details ground us.",
-      tension: "Rising curiosity + dread. The silence breaks."
-    }
-  },
-  {
-    id: 2,
-    title: "Mentor's Warning",
-    act: "Act I",
-    location: "University Lab",
-    timeOfDay: "Day",
-    pov: "Elena Zhao",
-    visualMood: "⚠️",
-    atmosphericColor: "from-amber-900 via-orange-950 to-black",
-
-    storyText: `[FLASHBACK - Two Years Earlier]
-
-Dr. Chen's hands trembled as he pressed the encrypted drive into Elena's palm. His office, usually warm with afternoon light, felt cold. Sterile.
-
-"They'll come for this," he said, eyes darting to the door. "The corporations. They don't want the truth about Mars."
-
-Elena tried to smile. "You're being paranoid again—"
-
-"I'm being realistic." Chen's voice cracked. "Promise me. If something happens to me... decode the message. Don't let them bury it."
-
-Three days later, Chen was dead. Heart attack, they said. Natural causes.
-
-Elena never believed it.`,
-
-    aiShowrunner: {
-      emotional: "Grief lingers here, unspoken. Chen's warning haunts Elena's every decision.",
-      narrative: "Flashback adds depth but feels slightly rushed. Chen's fear needs one more beat.",
-      tension: "Paranoia seeping in. Setup for conspiracy."
-    }
-  },
-  {
-    id: 3,
-    title: "Research Montage",
-    act: "Act I",
-    location: "Underground Lab",
-    timeOfDay: "Night",
-    pov: "Elena Zhao",
-    visualMood: "🔬",
-    atmosphericColor: "from-blue-950 via-slate-950 to-black",
-
-    storyText: `Hours blur. Coffee cups pile up. The underground lab hums with server fans.
-
-Elena's eyes burn from screen glare, but she can't stop. The signal's not random noise — it's structured. Intentional. Someone on Mars is trying to say something.
-
-Oracle processes terabytes of data per second, neural nets hunting patterns. "Progress: 34%. Estimated time: 47 hours."
-
-Too slow.
-
-Elena types faster, overriding safety protocols, pushing Oracle beyond designed limits. The AI doesn't protest. If anything, Oracle seems... eager.
-
-"We're close," Elena mutters, more to herself than to Oracle. "I can feel it."
-
-"Affirmative," Oracle replies. "Emotional resonance detected in signal harmonics. This is not automated. This is human."`,
-
-    aiShowrunner: {
-      emotional: "Obsession takes hold. Elena's losing herself in the mystery, and Oracle enables it.",
-      narrative: "Good pacing but Elena becomes too passive. She needs to actively discover something.",
-      tension: "Building momentum. The partnership with Oracle deepens."
-    }
-  }
-];
+import type { ImmersiveScene } from '../../adapters/architectureToScenes';
 
 interface ImmersiveStoryEntryProps {
-  onEnterScene?: (scene: typeof STORY_SCENES[0]) => void;
+  projectTitle: string;
+  projectDescription?: string;
+  scenes: ImmersiveScene[];
+  onEnterScene?: (scene: ImmersiveScene) => void;
 }
 
-export default function ImmersiveStoryEntry({ onEnterScene }: ImmersiveStoryEntryProps) {
+export default function ImmersiveStoryEntry({
+  projectTitle,
+  projectDescription,
+  scenes,
+  onEnterScene
+}: ImmersiveStoryEntryProps) {
   const [currentSceneIdx, setCurrentSceneIdx] = useState(0);
   const [showAI, setShowAI] = useState(false);
 
-  const scene = STORY_SCENES[currentSceneIdx];
+  const scene = scenes[currentSceneIdx];
+
+  // Handle empty scenes gracefully
+  if (!scene) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-violet-950 to-black flex items-center justify-center">
+        <div className="text-white/60 text-center">
+          <Sparkles className="w-16 h-16 mx-auto mb-4 text-violet-400" />
+          <p className="text-lg">No scenes available yet.</p>
+          <p className="text-sm mt-2">Create your story architecture to begin.</p>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     // Show AI narration after 3 seconds
@@ -111,7 +41,7 @@ export default function ImmersiveStoryEntry({ onEnterScene }: ImmersiveStoryEntr
   }, [currentSceneIdx]);
 
   const nextScene = () => {
-    if (currentSceneIdx < STORY_SCENES.length - 1) {
+    if (currentSceneIdx < scenes.length - 1) {
       setCurrentSceneIdx(currentSceneIdx + 1);
       setShowAI(false);
     }
@@ -256,13 +186,13 @@ export default function ImmersiveStoryEntry({ onEnterScene }: ImmersiveStoryEntr
 
           {/* Scene Counter */}
           <div className="text-white/60 text-sm font-bold min-w-[80px] text-center">
-            Scene {currentSceneIdx + 1} / {STORY_SCENES.length}
+            Scene {currentSceneIdx + 1} / {scenes.length}
           </div>
 
           {/* Next */}
           <button
             onClick={nextScene}
-            disabled={currentSceneIdx === STORY_SCENES.length - 1}
+            disabled={currentSceneIdx === scenes.length - 1}
             className="w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10"
           >
             <ChevronRight size={20} className="text-white" />
@@ -285,18 +215,20 @@ export default function ImmersiveStoryEntry({ onEnterScene }: ImmersiveStoryEntr
       <div className="fixed top-8 left-8 z-20">
         <div className="bg-black/40 backdrop-blur-xl rounded-2xl px-4 py-3 border border-white/10">
           <div className="text-xs text-white/40 uppercase tracking-wider font-bold mb-1">
-            The Last Signal
+            {projectTitle}
           </div>
-          <div className="text-sm text-white/80 font-bold">
-            Sci-Fi Thriller • 2087
-          </div>
+          {projectDescription && (
+            <div className="text-sm text-white/80 font-bold">
+              {projectDescription}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Progress indicator (subtle) */}
       <div className="fixed top-8 right-8 z-20">
         <div className="flex gap-2">
-          {STORY_SCENES.map((_, idx) => (
+          {scenes.map((_, idx) => (
             <div
               key={idx}
               className={`w-2 h-2 rounded-full transition-all ${

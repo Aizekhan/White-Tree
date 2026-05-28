@@ -250,3 +250,44 @@ export interface AnalysisResult {
 export interface AIResponse {
   result: AnalysisResult;
 }
+
+/**
+ * Project represents a user's narrative project stored in Firestore.
+ * Each project contains story architecture, narrative memory, and editor state.
+ */
+export interface Project {
+  /** Firestore document ID */
+  id: string;
+
+  /** User ID (from Firebase Auth) */
+  userId: string;
+
+  /** Project metadata */
+  title: string;
+  description: string;
+  language: 'UA' | 'ENG';
+  tier: 'free' | 'pro' | 'pro_plus';
+
+  /** Timestamps (ISO string format, converted from Firestore Timestamp) */
+  createdAt: string;
+  updatedAt: string;
+
+  /** Editor state (auto-saved) */
+  text?: string;
+  memory?: NarrativeMemory;
+  sceneProgress?: Record<string, "Planned" | "Drafted" | "Analyzed" | "Improved" | "Adapted">;
+  architecture?: StoryArchitecture;
+  result?: AnalysisResult;
+  activeScene?: {
+    act: string;
+    chapter: string;
+    scene: string;
+    title: string;
+    description: string;
+    goals: string[];
+    conflicts: string[];
+  } | null;
+
+  /** Token balance for AI operations */
+  tokens?: number;
+}
