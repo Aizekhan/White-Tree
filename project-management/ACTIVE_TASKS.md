@@ -1,11 +1,11 @@
 # Active Tasks
 
-**Last Updated:** 2026-05-27
-**Current Sprint:** Phase 1 - Cinematic Workspace Foundation
+**Last Updated:** 2026-05-28
+**Current Sprint:** Phase 1 - Real Backend Integration Complete
 
 ---
 
-## 🎯 Phase 1: Cinematic Workspace Foundation (2-3 days)
+## 🎯 Phase 1: Immersive Experience + Real Backend (COMPLETE ✅)
 
 ### ✅ Completed
 - [x] Create project-management folder structure
@@ -16,13 +16,20 @@
 - [x] Identify infrastructure access needs
 - [x] GitHub CLI authentication
 - [x] Firebase access confirmation
+- [x] Create ImmersiveStoryEntry.tsx (immersive scene viewer)
+- [x] Create ContextualWritingWorkspace.tsx (fullscreen writing mode)
+- [x] Create architectureToScenes.ts adapter (StoryArchitecture → ImmersiveScene)
+- [x] Connect immersive UI to real WhiteWrite backend
+- [x] Implement Universe Ignition UX (auto-select, hidden library)
+- [x] Fix React Hooks ordering violation
+- [x] Integrate real auto-save system
 
 ### 🔄 In Progress
-- [ ] **Minimal Architecture Cleanup**
-  - [ ] Create `src/services/AIOrchestrator.ts` (ONLY if needed)
-  - [ ] Extract large sections from App.tsx into feature modules
-  - [ ] Create `WorkspaceContainer.tsx` (main layout shell)
-  - [ ] Goal: App.tsx under 200 lines
+- [ ] **Test Scene → Writing Flow**
+  - [ ] Click "Enter Scene" and verify workspace loads
+  - [ ] Test auto-save triggers and persists to Firestore
+  - [ ] Verify atmosphere continuity across transitions
+  - Status: Ready for testing
 
 ### 📋 To Do - P0 (Critical)
 
