@@ -73,12 +73,9 @@ Ready to continue with: CinematicWorkspace.tsx + dark theme
 
 ### **BEFORE ENDING SESSION: Update Project Memory**
 
-**1. Update ACTIVE_TASKS.md**
-- Mark completed tasks with `[x]`
-- Update status of in-progress tasks
-- Add new tasks discovered during session
+**CRITICAL: These steps preserve continuity for next session. Skip NONE.**
 
-**2. Update SESSION_LOG.md**
+**1. Update SESSION_LOG.md (REQUIRED)**
 Add new session entry with:
 
 ```markdown
@@ -132,19 +129,45 @@ Add new session entry with:
 - Critical note for next session
 ```
 
-**3. Update CURRENT_PHASE.md (if needed)**
+**2. Update ACTIVE_TASKS.md (REQUIRED)**
+- Mark completed tasks with `[x]`
+- Update status of in-progress tasks
+- Add new tasks discovered during session
+- Move completed phase items to archive if phase done
+
+**3. Update CURRENT_PHASE.md (if phase changed)**
 - Update progress checkboxes
 - Update status if phase is completing
-- Add any new priorities
+- Add any new priorities discovered
+- Mark phase complete if all P0 tasks done
 
-**4. Commit & Push Everything**
+**4. Document Key Insights (CRITICAL)**
+
+**Product/UX Insights to Preserve:**
+- What created "holy shit" moments vs what felt like time waste
+- Any discoveries about immersion vs dashboard feeling
+- User reactions to new features
+- Design decisions that preserve creative OS feeling
+- **Red flags:** Any SaaS/dashboard regression patterns emerging
+
+**Examples:**
+- ✅ "Sidebar breaks immersion even with good content - remove in Story mode"
+- ✅ "Auto-select first project = immediate immersion vs project selection screen"
+- ⚠️ "Adding metrics panel started feeling like SaaS dashboard - avoided"
+
+**Why this matters:**
+→ Next session must not re-debate these insights
+→ Prevents regression to "AI productivity tool" feeling
+→ Preserves "creative operating system" direction
+
+**5. Commit & Push Everything (REQUIRED)**
 
 ```bash
-# Commit project-management updates
+# Step 1: Commit project-management updates FIRST
 git add project-management/
 git commit -m "docs: update session log and active tasks [Session X]"
 
-# Commit code changes
+# Step 2: Commit code changes with meaningful milestones
 git add src/
 git commit -m "feat: [descriptive commit message]
 
@@ -154,9 +177,38 @@ Screenshot: [mention if screenshot-worthy]
 
 🤖 Generated with Claude Code"
 
-# Push to GitHub
+# Step 3: Push to GitHub
 git push origin [branch-name]
 ```
+
+**6. Verify Continuity for Next Session**
+
+**Before ending, ensure next session can:**
+- [ ] Read SESSION_LOG.md and understand what was done
+- [ ] Read ACTIVE_TASKS.md and know what's next
+- [ ] Continue work without re-explaining vision
+- [ ] Know which UX patterns to avoid (dashboard creep, SaaS regression)
+- [ ] Pick up exactly where this session left off
+
+**If any unclear → add clarifying notes to SESSION_LOG.md**
+
+---
+
+### **SESSION END CHECKLIST**
+
+**Run through this before ending:**
+
+- [ ] SESSION_LOG.md updated with full session entry
+- [ ] ACTIVE_TASKS.md checkboxes updated
+- [ ] CURRENT_PHASE.md updated (if phase changed)
+- [ ] Key product/UX insights documented
+- [ ] Dashboard creep warnings documented (if any emerged)
+- [ ] Commits made with meaningful messages
+- [ ] Code pushed to GitHub
+- [ ] Next steps clearly written
+- [ ] Continuity verified (next session can continue seamlessly)
+
+**If all ✅ → Session properly closed**
 
 ---
 
@@ -464,6 +516,55 @@ If it doesn't create visible wow → rethink it.
 - Show screenshots if possible
 - List clear next steps
 - Ask if user wants to adjust priorities
+
+---
+
+## 📖 CLAUDE.md = SOURCE OF TRUTH
+
+**This file is the complete operational lifecycle document.**
+
+### **What CLAUDE.md Contains:**
+
+1. **Session Start Workflow** → How to begin every session
+2. **Session End Workflow** → How to close every session
+3. **Project Philosophy** → Demo impact > architecture purity
+4. **Product Direction** → Creative OS, not AI productivity tool
+5. **Continuity Rules** → Zero context loss between sessions
+6. **UX Guardrails** → Avoid dashboard creep / SaaS regression
+
+### **No Additional Planning Files Needed**
+
+**Existing files + their roles:**
+- `CLAUDE.md` → Operational protocol (this file)
+- `SESSION_LOG.md` → Session history and insights
+- `ACTIVE_TASKS.md` → Task tracking
+- `CURRENT_PHASE.md` → Current sprint focus
+- `DECISIONS.md` → Settled architectural decisions
+- `UI_DIRECTION.md` → Visual design principles
+- `ROADMAP.md` → Product vision
+
+**DO NOT CREATE:**
+- ❌ `NEXT_SESSION.md` (use SESSION_LOG.md instead)
+- ❌ Additional planning docs (clutters repo)
+- ❌ Separate continuity files (everything in SESSION_LOG)
+
+### **How to Use CLAUDE.md**
+
+**Every Session Start:**
+1. Read CLAUDE.md first (this file)
+2. Follow SESSION START PROTOCOL
+3. Read required files in order
+
+**Every Session End:**
+1. Follow SESSION END PROTOCOL
+2. Update SESSION_LOG.md
+3. Update ACTIVE_TASKS.md
+4. Commit & push
+
+**When Adding New Rules:**
+- Update CLAUDE.md directly
+- Commit with clear explanation
+- Keep this file as single source of truth
 
 ---
 
