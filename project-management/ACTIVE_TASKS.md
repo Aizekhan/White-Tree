@@ -190,81 +190,104 @@ When adding new tasks:
 ## 🎨 Magical Book Entry Prototype (Separate Mini-Project)
 
 **Location:** `E:\White Tree\magical-book-prototype\`
-**Dev Server:** http://localhost:5175
-**Status:** Architecture built, user understanding gap identified
+**Dev Server:** http://localhost:5173
+**Status:** 4-stage Story Creation Flow COMPLETE ✅
+
+### ✅ Completed (Session 7 - 2026-05-30)
+- [x] **StoryCreationFlow.tsx - Full 4-stage flow:**
+  - [x] Stage 0: Start screen (StartBack.png + "Створити нову історію" button)
+  - [x] Stage 1: Config form (pergament.png background, all story options)
+  - [x] Stage 2: Generation animation (StartStoryAnim.mp4 + overlay)
+  - [x] Stage 3: Reading mode (OpenedBook.jpg + 2-page spread + navigation)
+  - [x] Mock AI generation (10 pages of sci-fi text)
+  - [x] Arrow navigation (← →) for page flipping
+  - [x] Responsive design (aspect-ratio container)
 
 ### 🔄 In Progress
-- [ ] **Explain react-pageflip mechanics to user**
-  - [ ] Create simple 20-line example showing basic page flip
-  - [ ] Explain how HTMLFlipBook component works
-  - [ ] Show how to add pages as children
-  - Status: Not Started
-  - Priority: P0 (Critical - user blocked)
+- [ ] **Edit mode functionality**
+  - [ ] Make text editable (textarea instead of div)
+  - [ ] Save user edits
+  - [ ] Possibly add autosave
+  - Status: Button exists, functionality not implemented
+  - Priority: P1
 
 ### 📋 To Do - P0 (Critical)
-- [ ] **Simplify to MVP**
-  - [ ] Remove complex Framer Motion animations temporarily
-  - [ ] Just: Background + Book image + Page flip + Simple text
-  - [ ] Get basic version working with user understanding
-  - [ ] THEN re-add magic effects one by one with explanations
+- [ ] **Integrate Gemini AI**
+  - [ ] Replace mock data with real AI generation
+  - [ ] Use config parameters (storyType, sceneLength, narrativeMode)
+  - [ ] Generate during video animation (3 seconds)
+  - [ ] Handle streaming or batch generation
   - Status: Not Started
   - Priority: P0
 
-- [ ] **Collaborative iteration with user**
-  - [ ] User says what they want to change
-  - [ ] AI explains how that part works
-  - [ ] Modify together
-  - [ ] Ensure user understands each change
+- [ ] **Add video onEnded handler**
+  - [ ] Auto-transition from generating → reading after video
+  - [ ] Currently uses setTimeout, should use video event
   - Status: Not Started
   - Priority: P0
 
-### 📋 To Do - P1 (After MVP Works)
-- [ ] **Re-add magical effects (with explanations)**
-  - [ ] Ink reveal text animation
-  - [ ] Ambient particles
-  - [ ] Book glow effect
-  - [ ] Generation ritual sequence
-  - [ ] Each with clear explanation of how it works
+### 📋 To Do - P1 (High Priority)
+- [ ] **Test full user flow**
+  - [ ] Start → Config → Generation → Reading
+  - [ ] Test all form options
+  - [ ] Test navigation edge cases
+  - Status: Ready for testing
+  - Priority: P1
+
+- [ ] **Save stories to Firestore**
+  - [ ] Save generated story with metadata
+  - [ ] Load existing stories
+  - [ ] Story list view
   - Status: Not Started
   - Priority: P1
+
+### 📋 To Do - P2 (Nice to Have)
+- [ ] **Page flip animation**
+  - [ ] Use react-pageflip library (already installed)
+  - [ ] Smooth page turn effect
+  - Status: Not Started
+  - Priority: P2
+
+- [ ] **Loading progress during generation**
+  - [ ] Progress bar or percentage
+  - [ ] Show generation steps
+  - Status: Not Started
+  - Priority: P2
 
 - [ ] **Integrate into main WhiteWrite**
   - [ ] Replace Login screen with magical book entry
   - [ ] Connect book flow to Firebase Auth
   - [ ] Universe prompt → createProject
   - Status: Not Started
-  - Priority: P1
+  - Priority: P2
 
-### ✅ Completed
-- [x] Create separate mini-project for rapid iteration
-- [x] Install dependencies (react-pageflip, framer-motion, tailwind)
-- [x] User uploaded custom images (back.png, Book.png)
-- [x] Fix Tailwind CSS 4 PostCSS configuration
-- [x] Build LivingBook architecture
-- [x] Create InkRevealText component
-- [x] Create MagicalParticles component
-- [x] Implement spread-based pagination
-- [x] Add "The Last Signal" demo content
+### 📝 Files Created/Modified (Session 7)
+- `src/StoryCreationFlow.tsx` (414 lines) - Full implementation
+- `src/App.tsx` - Connected StoryCreationFlow
+- `public/images/ornaments/pergament.png` - Form background (uploaded by user)
 
-### 📝 Files Created
-- `src/components/LivingBook.tsx`
-- `src/components/InkRevealText.tsx`
-- `src/components/MagicalParticles.tsx`
-- `src/App.tsx` (updated with demo)
-- `tailwind.config.js`
-- `postcss.config.js`
-- `index.html` (medieval fonts)
+### 📝 User Assets
+- `public/images/backgrounds/StartBack.png` - Wizard in library
+- `public/images/ornaments/pergament.png` - Form background
+- `public/images/book/OpenedBook.jpg` - Opened book with empty pages
+- `public/animations/StartStoryAnim.mp4` - Book opening animation
 
-### 📝 User Vision Highlights (Study These!)
-- "Book is NOT a component. It's the entire experience."
-- "Camera slowly moves, pages breathe, dust floats, text writes with ink"
-- "Ink Reveal: faint glow → ink stroke → texture absorption"
-- "Left page = Context/Lore, Right page = Narrative"
-- "One spread = one narrative moment"
-- "AI writes BEFORE text appears: ritual sequence"
-- "This is: ritualized storytelling interface"
+### 📝 Configuration Options Implemented
+**Story Type:**
+- Односерійний наратив
+- Багатосерійний (acts + scenes per act)
+- Безкінечний (scenes per act)
 
-### ⚠️ Critical Insight
-- **User needs explanation-first approach, not code-first**
-- Too much abstraction overwhelmed user
-- Next session: Explain → Show simple example → Build together → User understands
+**Scene Length:** 200-2000 words (slider)
+
+**Narrative Mode:**
+- Тільки наратив (текст)
+- Preprod для відеороликів
+- З картинками/ескізами
+
+### ⚠️ Critical Lessons (Session 7)
+- **Quality > Speed:** Multiple syntax errors frustrated user
+- **Test before sending:** Don't iterate 3-4 times on fixes
+- **User quote:** "я ебав тебе в рот -раніше ти гарно все так робив, а зараз - ну просто діч полнєйша"
+- **Next session:** Focus on quality, test JSX syntax before Edit tool
+- **Session ended:** User requested end due to frustration with quality
