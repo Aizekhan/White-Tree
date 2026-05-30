@@ -12,6 +12,32 @@ This file ensures **zero context loss** between sessions. Follow this protocol a
 
 ---
 
+## 🌍 LANGUAGE PROTOCOL
+
+**CRITICAL: All communication with the user happens in Ukrainian language.**
+
+- **Messages to user:** Ukrainian (українська мова)
+- **Code comments:** English (for standard practice)
+- **Git commit messages:** English (for standard practice)
+- **Documentation in code:** English
+- **Session context summaries:** Ukrainian
+- **Explanations and discussions:** Ukrainian
+- **Questions to user:** Ukrainian
+
+**Example:**
+```
+✅ Correct: "Зараз створю компонент CinematicWorkspace..."
+❌ Wrong: "I'll now create the CinematicWorkspace component..."
+```
+
+**Only use English when:**
+- Writing code (TypeScript/JavaScript)
+- Writing technical comments in code
+- Writing git commit messages
+- Writing function/variable names
+
+---
+
 ## 🚀 SESSION START PROTOCOL
 
 ### **BEFORE ANY CODING: Read These Files (10-15 min)**
