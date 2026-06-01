@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { BookOpen, Plus, Trash2, Users, Edit2, Check, X } from "lucide-react";
+import { BookOpen, Plus, Trash2, Users, Edit2, Check, X, Zap, ZapOff } from "lucide-react";
 import { Project } from "../../../types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -101,16 +101,19 @@ export default function ProjectList({
                         <h2 className="text-2xl font-serif font-bold">{t.storyProjects}</h2>
                         <p className="text-sm text-ink/40">{t.manageUniverses}</p>
                     </div>
-                    {!isCreating ? (
-                        <button
-                            onClick={() => setIsCreating(true)}
-                            className="flex items-center gap-2 bg-ink text-paper px-4 py-2 rounded-xl text-sm font-medium hover:bg-ink/90 transition-all shadow-sm"
-                        >
-                            <Plus size={18} />
-                            {t.newProject}
-                        </button>
-                    ) : (
-                        <div className="bg-white border border-violet-100 p-6 rounded-2xl shadow-xl w-full max-w-2xl mt-4">
+                    <button
+                        onClick={() => setIsCreating(true)}
+                        className="flex items-center gap-2 bg-ink text-paper px-4 py-2 rounded-xl text-sm font-medium hover:bg-ink/90 transition-all shadow-sm"
+                    >
+                        <Plus size={18} />
+                        {t.newProject}
+                    </button>
+                </div>
+
+                {/* Create Project Modal */}
+                {isCreating && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                        <div className="bg-white border border-violet-100 p-6 rounded-2xl shadow-xl w-full max-w-2xl mx-4">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="w-10 h-10 bg-violet-100 text-violet-600 rounded-xl flex items-center justify-center">
                                     <BookOpen size={20} />
@@ -186,8 +189,8 @@ export default function ProjectList({
                                 </div>
                             </form>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {projects.map(project => {
@@ -304,10 +307,29 @@ export default function ProjectList({
                                         </span>
                                         <span>{new Date(project.updatedAt).toLocaleDateString()}</span>
                                     </div>
-                                    <span className="flex items-center gap-1">
-                                        <Users size={10} />
-                                        {project.memory?.characters?.length || 0}
-                                    </span>
+                                    <div className="flex items-center gap-3">
+                                        {/* Canon Mode Toggle (Phase 4) */}
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onUpdateProject(project.id, { canonAware: !project.canonAware });
+                                            }}
+                                            title={project.canonAware ? "Canon Mode Active (Click to disable)" : "Legacy Mode (Click to enable Canon)"}
+                                            className={cn(
+                                                "flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold transition-all",
+                                                project.canonAware
+                                                    ? "bg-violet-100 text-violet-600 hover:bg-violet-200"
+                                                    : "bg-ink/5 text-ink/30 hover:bg-ink/10"
+                                            )}
+                                        >
+                                            {project.canonAware ? <Zap size={10} /> : <ZapOff size={10} />}
+                                            {project.canonAware ? "CANON" : "LEGACY"}
+                                        </button>
+                                        <span className="flex items-center gap-1">
+                                            <Users size={10} />
+                                            {project.memory?.characters?.length || 0}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 {isDeleting && (
