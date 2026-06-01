@@ -6,3 +6,4 @@ export * from "./deriveMemory";
 export * from "./extractCanonPrompt";
 export * from "./backfillCanon";
 export * from "./testBackfill";
+export * from "./extractFromEdit";
