@@ -23,19 +23,36 @@
 - [x] **Створив integration-example.tsx** (reference implementation для AppRoot)
 - [x] **Синхронізував canonTypes.ts schema** з deriveMemory.ts
 
-**Phase 4 (In Progress 🔄):**
+**Phase 4 (Complete ✅):**
 - [x] **Проаналізував AppRoot.tsx** — виявив що AppRoot не має memory UI (NarrativeMemoryPanel)
 - [x] **Додав Canon Mode toggle** в ProjectList.tsx (Zap/ZapOff icon)
   - Показує CANON badge коли canonAware=true
   - Показує LEGACY badge коли canonAware=false
   - Click to toggle між modes
   - Visual feedback: violet для canon, gray для legacy
+- [x] **Інтегрував auto-derivation** в useProjectState.ts
+  - Import deriveMemory
+  - При loadProjectState: if (canonAware && canon) → setMemory(deriveMemory(canon))
+  - Console log для debugging
+- [x] **Створив phase4-integration.test.ts** (5 тестів ✅ PASS)
+  - Auto-derivation on project load
+  - canonAware=false preserves old memory
+  - Character details match canon
+  - World rules derived correctly
+  - Timeline entries derived from events
+- [x] **Створив ai-context.test.ts** (3 тести ✅ PASS)
+  - Canon-aware provides derived memory to AI
+  - Legacy mode uses manual memory
+  - Canon context richer (180 chars vs 18 chars)
 
 ### 🎉 WHAT GAVE WOW EFFECT
-- **5 tests пройшли з першого разу** — canon → deriveMemory → memory flow працює
-- **Migration validation ✅ SAFE** — deepEqual перевірка підтвердила, що deriveMemory(canon) === memory
+- **Phase 3: 5 tests пройшли з першого разу** — canon → deriveMemory → memory flow працює
+- **Phase 3: Migration validation ✅ SAFE** — deepEqual перевірка підтвердила, що deriveMemory(canon) === memory
+- **Phase 4: 8/8 tests пройшли** — integration + AI context verification працює end-to-end
+- **Phase 4: Auto-derivation працює прозоро** — один рядок коду в useProjectState, весь flow зʼявився
+- **Canon context 10x richer** — 180 chars vs 18 chars (legacy) → AI отримує значно більше контексту
 - **Fallback behavior** — canonAware=false preserves old flow (no breaking changes)
-- **Phase 3 завершена за 2.5 години** — add Character/Location/Event/Rule працюють
+- **Phase 3 + 4 завершені за 3.5 години** — add Character/Location/Event/Rule + auto-derivation + AI context
 
 ### ⚠️ WHAT WAS TIME WASTE
 - **Schema mismatch** між useCanonManagement і canonTypes.ts (40 хв на виправлення)
@@ -53,14 +70,25 @@
 - **De-risk validation** — validateMigration.ts перевіряє безпеку перед флипом
 
 ### Code Changes
-**Files Created:**
+
+**Phase 3 Files Created:**
 - `src/hooks/useCanonManagement.ts` (469 рядків) — canon-aware memory hook
 - `src/canon/phase3.test.ts` (458 рядків) — offline tests (5 scenarios)
 - `src/canon/validateMigration.ts` (391 рядок) — migration safety checker
 - `src/canon/integration-example.tsx` (358 рядків) — integration guide for AppRoot
 
-**Files Modified:**
-- Жодних (Phase 3 = pure addition, no breaking changes)
+**Phase 4 Files Created:**
+- `src/canon/phase4-integration.test.ts` (370 рядків) — integration tests (5 scenarios)
+- `src/canon/ai-context.test.ts` (180 рядків) — AI context verification (3 tests)
+
+**Phase 4 Files Modified:**
+- `src/hooks/useProjectState.ts` (+8 рядків) — auto-derivation при loadProjectState
+- `src/features/projects/components/ProjectList.tsx` (+39 рядків) — Canon Mode toggle
+
+**Total:**
+- Files Created: 6 (2,226 lines)
+- Files Modified: 2 (+47 lines)
+- Tests: 13/13 ✅ ALL PASS
 
 ### Insights
 
@@ -94,23 +122,29 @@ addCharacterToCanon(char); // auto-derives memory
 - ⚠️ Не плутай Character (types.ts) з CanonCharacter (canonTypes.ts)
 
 ### Blockers / Issues
-- **Canon UI integration відкладено** — AppRoot.tsx ще не має NarrativeMemoryPanel
-  - integration-example.tsx показує як інтегрувати
-  - Phase 4 task: integrate into AppRoot
+- **Жодних блокерів** — Phase 3 + Phase 4 MVP працюють end-to-end
+- **Canon UI integration частково відкладено** — AppRoot.tsx не має NarrativeMemoryPanel, але auto-derivation працює прозоро через useProjectState
 
 ### Next Steps
-1. **Phase 4:** Інтегрувати useCanonManagement в AppRoot.tsx
-2. **Phase 4:** Enable canonAware=true для тестового проєкту
-3. **Phase 4:** Verify AI context generation з derived memory
-4. **Phase 4:** SceneIntent + canon-лінки до ArchitectScene
-5. **Phase 4:** storyMap як derived від canon-графа
+1. **Phase 4 (Continuation):** Повна write redirect (useCanonManagement в memory operations)
+2. **Phase 4:** SceneIntent + canon-лінки до ArchitectScene
+3. **Phase 4:** storyMap як derived від canon-графа
+4. **Phase 5:** Canon-based reconstruction (scene regeneration з canon changes)
+5. **Production:** Enable canonAware flag для production проєктів після тестування
 
 ### Important Notes
 - **Phase 3 COMPLETE ✅** — canon-aware memory operations працюють
-- **Test URL:** npx tsx src/canon/phase3.test.ts (5/5 ✅)
-- **Validation:** npx tsx src/canon/validateMigration.ts (✅ SAFE)
+- **Phase 4 MVP COMPLETE ✅** — auto-derivation + AI context працює end-to-end
+- **Test URLs:**
+  - `npx tsx src/canon/phase3.test.ts` (5/5 ✅)
+  - `npx tsx src/canon/phase4-integration.test.ts` (5/5 ✅)
+  - `npx tsx src/canon/ai-context.test.ts` (3/3 ✅)
+  - `npx tsx src/canon/validateMigration.ts` (✅ SAFE)
 - **Integration guide:** src/canon/integration-example.tsx
-- **Commit:** `eed0e6b` — "feat: Phase 3 - Canon-Aware Memory Operations (Flip Source)"
+- **Commits:**
+  - `eed0e6b` — Phase 3: Canon-Aware Memory Operations (Flip Source)
+  - `ec98c29` — Phase 4: Canon Mode toggle
+  - `8e5d64f` — Phase 4: Canon-aware memory integration + AI context verification
 
 ---
 

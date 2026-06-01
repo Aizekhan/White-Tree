@@ -75,14 +75,34 @@ Migration Validation: ✅ SAFE
 - deriveMemory(canon) === memory (deepEqual check passed)
 ```
 
-### 🔄 Phase 4: Derived Features (In Progress)
+### ✅ Phase 4: Derived Features (MVP COMPLETE ✅)
+**Date:** 2026-06-01
+**Commits:** `ec98c29`, `8e5d64f`
+
 - [x] Додати canonAware toggle UI в ProjectList (Zap/ZapOff icon)
 - [x] Підготувати useCanonManagement для інтеграції (Phase 3 deliverable)
-- [ ] Повна інтеграція useCanonManagement в AppRoot.tsx (blocked: AppRoot не має memory UI)
+- [x] Інтегрувати auto-derivation в useProjectState.ts
+- [x] Створити phase4-integration.test.ts (5 тестів ✅ PASS)
+- [x] Створити ai-context.test.ts (3 тести ✅ PASS)
+- [x] Verify AI context generation with derived memory (✅ VERIFIED)
+- [ ] Повна write redirect (useCanonManagement в memory operations)
 - [ ] Додати SceneIntent + canon-лінки до ArchitectScene
 - [ ] Імплементувати storyMap як похідний від canon-графа
-- [ ] Verify AI context generation with derived memory
-- Status: Canon Mode toggle ready, awaiting full memory UI integration
+
+**Key Deliverables:**
+- ✅ Auto-derivation: canonAware=true → memory = deriveMemory(canon)
+- ✅ Canon Mode toggle ready for testing
+- ✅ AI receives canon-based context (180 chars vs 18 chars legacy)
+- ✅ Legacy mode preserved (canonAware=false)
+
+**Test Results:**
+```
+Phase 4 Integration: 5/5 ✅
+AI Context Generation: 3/3 ✅
+Total: 8/8 ✅ ALL TESTS PASSED
+```
+
+**Status:** MVP integration complete, canon-aware flow working end-to-end
 
 ---
 
