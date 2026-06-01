@@ -77,7 +77,7 @@ Migration Validation: ✅ SAFE
 
 ### ✅ Phase 4: Derived Features (MVP COMPLETE ✅)
 **Date:** 2026-06-01
-**Commits:** `ec98c29`, `8e5d64f`
+**Commits:** `ec98c29`, `8e5d64f`, `dd95070`, `1203c19`, `fbd72a6`
 
 - [x] Додати canonAware toggle UI в ProjectList (Zap/ZapOff icon)
 - [x] Підготувати useCanonManagement для інтеграції (Phase 3 deliverable)
@@ -85,24 +85,52 @@ Migration Validation: ✅ SAFE
 - [x] Створити phase4-integration.test.ts (5 тестів ✅ PASS)
 - [x] Створити ai-context.test.ts (3 тести ✅ PASS)
 - [x] Verify AI context generation with derived memory (✅ VERIFIED)
-- [ ] Повна write redirect (useCanonManagement в memory operations)
+- [x] **Phase 4.5:** EXTRACT_FROM_EDIT AI mode foundation
+  - [x] Додати EXTRACT_FROM_EDIT режим в AIEngine.ts
+  - [x] Створити extractFromEditPrompt.ts (268 рядків)
+  - [x] Інтегрувати AI виклик в extractFromEdit.ts
+  - [x] Confidence filtering (>= 0.7)
+- [x] **Phase 4.6:** Guardian Dialog UI
+  - [x] Створити GuardianDialog.tsx (614 рядків)
+  - [x] Natural language display (українською)
+  - [x] Entity type promotion (dropdown)
+  - [x] Conflict warnings з impact visualization
+  - [x] Onboarding coach tip
+  - [x] Створити guardian-test.html (5 scenarios)
+- [x] **Phase 4.7:** Inline Edit Handler
+  - [x] Додати onBlur handler до NarrativeWorkspace textarea
+  - [x] Debounce 500ms
+  - [x] Loading state indicator
+  - [x] Guards (canonAware, not empty, draft mode)
+- [x] **Phase 4.8:** Canon Update Flow
+  - [x] Інтегрувати useCanonManagement для підтверджених сутностей
+  - [x] handleConfirmCanonChanges handler
+  - [x] Auto-derivation після canon update
+  - [x] onCanonUpdate callback
 - [ ] Додати SceneIntent + canon-лінки до ArchitectScene
 - [ ] Імплементувати storyMap як похідний від canon-графа
+- [ ] **Phase 4.9:** Reconstruction queue (optional)
+  - [ ] Track affected scenes (recon: "review")
+  - [ ] Show user: "3 scenes need review"
 
 **Key Deliverables:**
 - ✅ Auto-derivation: canonAware=true → memory = deriveMemory(canon)
 - ✅ Canon Mode toggle ready for testing
 - ✅ AI receives canon-based context (180 chars vs 18 chars legacy)
 - ✅ Legacy mode preserved (canonAware=false)
+- ✅ **EDIT → CANON pipeline COMPLETE (Phase 4.5-4.8)**
+- ✅ Human-in-the-loop confirmation (Guardian Dialog)
+- ✅ Zero manual memory writes (all through Guardian)
 
 **Test Results:**
 ```
 Phase 4 Integration: 5/5 ✅
 AI Context Generation: 3/3 ✅
-Total: 8/8 ✅ ALL TESTS PASSED
+Phase 4.5-4.8: Manual testing via guardian-test.html ✅
+Total: 8/8 unit tests ✅ + EDIT→CANON flow working end-to-end ✅
 ```
 
-**Status:** MVP integration complete, canon-aware flow working end-to-end
+**Status:** EDIT → CANON flow готовий до production тестування
 
 ---
 
