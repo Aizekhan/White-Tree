@@ -5,3 +5,4 @@ export * from "./canonTypes";
 export * from "./deriveMemory";
 export * from "./extractCanonPrompt";
 export * from "./backfillCanon";
+export * from "./testBackfill";
