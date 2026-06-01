@@ -4,13 +4,15 @@
 
 ---
 
-## 📅 Session 10: Canon System Phase 3 (Flip Source) ✅
+## 📅 Session 10: Canon System Phase 3 (Flip Source) ✅ + Phase 4 Start 🔄
 **Date:** 2026-06-01
-**Duration:** ~2.5 години
+**Duration:** ~3.5 години
 **AI Agent:** Claude Code (Sonnet 4.5)
 **Human:** Aizekhan
 
 ### What We Did
+
+**Phase 3 (Complete ✅):**
 - [x] **Проаналізував memory write paths** (addCharacterMemory, addStringMemory в App.tsx)
 - [x] **Створив useCanonManagement.ts хук** (canon-aware memory operations)
   - addCharacterToCanon, addLocationToCanon, addEventToCanon, addRuleToCanon, addTimelineToCanon
@@ -20,6 +22,14 @@
 - [x] **Створив validateMigration.ts** (де-ризик validation tool, ✅ SAFE)
 - [x] **Створив integration-example.tsx** (reference implementation для AppRoot)
 - [x] **Синхронізував canonTypes.ts schema** з deriveMemory.ts
+
+**Phase 4 (In Progress 🔄):**
+- [x] **Проаналізував AppRoot.tsx** — виявив що AppRoot не має memory UI (NarrativeMemoryPanel)
+- [x] **Додав Canon Mode toggle** в ProjectList.tsx (Zap/ZapOff icon)
+  - Показує CANON badge коли canonAware=true
+  - Показує LEGACY badge коли canonAware=false
+  - Click to toggle між modes
+  - Visual feedback: violet для canon, gray для legacy
 
 ### 🎉 WHAT GAVE WOW EFFECT
 - **5 tests пройшли з першого разу** — canon → deriveMemory → memory flow працює
