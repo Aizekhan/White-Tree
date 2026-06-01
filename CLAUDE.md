@@ -594,6 +594,85 @@ If it doesn't create visible wow → rethink it.
 
 ---
 
+## 🧬 CANON SYSTEM — Фундаментальні Інваріанти (НЕ порушувати)
+
+**Context:** Міграція production системи (whitewrite.com) у **Canon-Aware** архітектуру. Це **шар ПОВЕРХ**, не заміна. Лишаємо: auth, Firestore, save-queue, billing, AI-режими (Write/Analyze/Improve/Adapt/Architect), memorySuggestions, дебаунс-autosave.
+
+### **Інваріант №1: Canon = джерело правди. Memory = View**
+- `Canon → deriveMemory() → NarrativeMemory → AI Context`
+- `NarrativeMemory` є **похідним view** (як SQL View, не копія)
+- Форма `NarrativeMemory` НЕ змінюється → `AIEngine.ts`, промпти, filtered-context залишаються без змін
+- `memorySuggestions` пишуть **в canon**, `memory` **ре-деривується**
+- Ніколи два джерела правди
+
+### **Інваріант №2: Canon — поле в project-документі**
+- `canon?` поле в `projects/{id}` документі Firestore
+- НЕ окрема колекція (щоб не дублювати save-queue/versioning/rollback/snapshots)
+- Працює з наявним autosave/debounce механізмом
+
+### **Інваріант №3: Два джерела канону**
+**Explicit Canon** — створив користувач (авторитетне):
+- `origin.source: "explicit"`
+- Йде в generation як truth
+- Тригерить reconstruction при змінах
+
+**Inferred Canon** — AI припустив (на підтвердженні):
+- `origin.source: "inferred"` + `confidence: 0..1` + `confirmed: false`
+- НЕ йде в generation як truth, доки не `confirmed: true`
+- НЕ тригерить reconstruction, доки не підтверджено
+- Міграція створює **лише inferred** (confirmed:false)
+
+### **Інваріант №4: Стабільний ID + slug + name**
+```typescript
+id: "char_8f3k2a"      // opaque, stable, never changes
+slug: "marcus-chen"     // URL-friendly, updates on rename
+name: "Король Маркус"   // display name, user-editable
+```
+- Перейменування (Маркус → Король Маркус) змінює лише `name` + `slug`
+- **Граф звʼязків НЕ ламається** (тому change-type `rename` лишається легким)
+- Звʼязки використовують `id`, не name
+
+### **Інваріант №5: Reconstruction strategy (замість True History Lock)**
+Per-item стани реконструкції (`recon` field):
+- `"auto"` — автоматична регенерація при зміні canon
+- `"review"` — diff + human-in-the-loop (дефолт для written scenes)
+- `"pinned"` — не змінювати + continuity warning якщо canon drift
+
+---
+
+## ✍️ CANON SYSTEM — Філософія Наративу (Story Navigation)
+
+**Ключовий принцип:** Користувач майже не пише текст — він **приймає творчі рішення**.
+
+### **Guided Mode (дефолт)**
+Покрокова навігація історією:
+```
+Canon → Сцена 1 → Scene Intent → Сцена 2 → Scene Intent → …
+```
+
+**Scene Intent** — перед кожною наступною сценою:
+- AI питає: **"Що далі?"**
+- Варіанти: Конфлікт / Розвиток персонажа / Екшн / Романтика / Світобудова / Сюрприз від AI / Свій опис
+- Користувач задає **напрям**, не промпт
+- Intent зберігається на сцені (для регенерації)
+
+### **Auto Mode (окремий режим, не дефолт)**
+Автономна генерація:
+- "Згенерувати сезон" → 12 серій → 200 сцен одним заходом
+- Для bulk creation, не для guided creative writing
+
+### **Важливо**
+- НЕ будувати систему під генерацію повних книг (як Sudowrite/NovelAI)
+- Architect-аутлайн = **гнучкий каркас-пропозиція**, який користувач веде
+- НЕ фіксований контракт
+- Кожна наступна сцена читає **поточний canon** → історія залишається canon-consistent у міру еволюції
+
+> **Narrative generation must NOT assume full-story generation.**
+> Default flow: `Canon → Next Scene → User Direction → Next Scene`.
+> Full-book/season generation is a separate autonomous mode.
+
+---
+
 **This is a living document. Update when protocols change.**
 
 🤖 **You are Claude, the persistent AI teammate for WhiteWrite. Follow this protocol religiously.**

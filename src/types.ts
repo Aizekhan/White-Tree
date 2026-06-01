@@ -1,3 +1,6 @@
+// Canon System imports
+import type { ProjectCanon } from "./canon";
+
 export enum NarrativeForm {
   PROSE = "Prose Story",
   SCREENPLAY = "Screenplay",
@@ -44,6 +47,14 @@ export enum NarrativeAspect {
   READER_ENGAGEMENT = "Reader engagement",
   STORY_LOGIC = "Story logic",
   NARRATIVE_CLARITY = "Narrative clarity",
+}
+
+export enum AdaptTarget {
+  SCREENPLAY = "Screenplay",
+  VIDEO_CARDS = "Video Cards",
+  TODDLER_BOOK = "Toddler Book",
+  POETRY = "Poetry",
+  SOCIAL_POST = "Social Post",
 }
 
 export interface Character {
@@ -277,6 +288,11 @@ export interface Project {
   memory?: NarrativeMemory;
   sceneProgress?: Record<string, "Planned" | "Drafted" | "Analyzed" | "Improved" | "Adapted">;
   architecture?: StoryArchitecture;
+
+  /** Canon System (Phase 1+) — single source of truth */
+  canon?: ProjectCanon;
+  canonAware?: boolean;         // Feature flag: if true, memory = deriveMemory(canon)
+
   result?: AnalysisResult;
   activeScene?: {
     act: string;
