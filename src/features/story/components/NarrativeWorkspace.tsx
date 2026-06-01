@@ -10,10 +10,13 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { twMerge } from "tailwind-merge";
 import { clsx, type ClassValue } from "clsx";
-import { QuickFix, AdaptTarget } from "../../../types";
+import { QuickFix, AdaptTarget, Project } from "../../../types";
 import { SubscriptionGate } from "../../shared/components/SubscriptionGate";
 import { AudioPlayer } from "../../shared/components/AudioPlayer";
 import { FEATURES } from "../../../config/subscription";
+import { extractFromEdit, type ExtractFromEditResult } from "../../../canon";
+import GuardianDialog, { type ConfirmedEntity } from "../../memory/components/GuardianDialog";
+import { useCanonManagement } from "../../../hooks/useCanonManagement";
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -35,6 +38,8 @@ interface NarrativeWorkspaceProps {
     onShowSubscriptionGate?: (feature: string) => void;
     saveStatus?: 'idle' | 'saving' | 'saved' | 'error';
     onManualSave?: () => void;
+    activeProject?: Project | null; // For canon extraction
+    onCanonUpdate?: () => void; // Callback after canon update
 }
 
 export default function NarrativeWorkspace({
@@ -50,12 +55,25 @@ export default function NarrativeWorkspace({
     onShowSubscriptionGate,
     language,
     saveStatus = 'saved',
-    onManualSave
+    onManualSave,
+    activeProject,
+    onCanonUpdate
 }: NarrativeWorkspaceProps) {
     const [view, setView] = useState<'draft' | 'adapted'>('draft');
     const [adaptTarget, setAdaptTarget] = useState<AdaptTarget>(AdaptTarget.SCREENPLAY);
     const [showDescription, setShowDescription] = useState(false);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+    // Guardian Dialog state
+    const [guardianDialogOpen, setGuardianDialogOpen] = useState(false);
+    const [extractionResult, setExtractionResult] = useState<ExtractFromEditResult | null>(null);
+    const [isExtracting, setIsExtracting] = useState(false);
+    const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Canon management hook (only if project is canon-aware)
+    const canonAware = activeProject?.canonAware ?? false;
+    const useCanonMgmt = useCanonManagement(canonAware);
+    const { addCharacterToCanon, addLocationToCanon, addEventToCanon } = useCanonMgmt;
 
     // Auto-switch to adapted view if a new adaptation arrives
     useEffect(() => {
@@ -70,6 +88,92 @@ export default function NarrativeWorkspace({
         ? (activeScene?.adaptedText || "")
         : (typeof text === 'string' && text.length > 0 ? text : (activeScene?.description || ""));
     const isReadOnly = view === 'adapted';
+
+    // Handle blur event with debounce for canon extraction
+    const handleBlur = async () => {
+        // Only extract if:
+        // - Project is canon-aware
+        // - Has canon data
+        // - Text is not empty
+        // - Not in read-only mode
+        if (!canonAware || !activeProject?.canon || !currentText.trim() || isReadOnly) {
+            return;
+        }
+
+        // Clear previous debounce timer
+        if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+        }
+
+        // Debounce 500ms
+        debounceTimerRef.current = setTimeout(async () => {
+            try {
+                setIsExtracting(true);
+
+                const result = await extractFromEdit({
+                    text: currentText,
+                    sceneId: activeScene?.id || activeScene?.title || 'unknown',
+                    existingCanon: activeProject.canon,
+                    language
+                });
+
+                // Only show dialog if there are changes
+                const hasChanges =
+                    result.newEntities.characters.length > 0 ||
+                    result.newEntities.locations.length > 0 ||
+                    result.newEntities.events.length > 0 ||
+                    result.conflicts.length > 0;
+
+                if (hasChanges) {
+                    setExtractionResult(result);
+                    setGuardianDialogOpen(true);
+                }
+            } catch (error) {
+                console.error('[NarrativeWorkspace] extractFromEdit failed:', error);
+            } finally {
+                setIsExtracting(false);
+            }
+        }, 500);
+    };
+
+    // Handle confirmed canon changes from Guardian Dialog
+    const handleConfirmCanonChanges = (entities: ConfirmedEntity[]) => {
+        entities.forEach(entity => {
+            switch (entity.type) {
+                case 'character':
+                    addCharacterToCanon({
+                        name: entity.name,
+                        role: entity.role || 'Unknown',
+                        trait: entity.trait || '',
+                        goals: '',
+                        relationships: '',
+                        developmentArc: ''
+                    });
+                    break;
+                case 'location':
+                    addLocationToCanon({
+                        name: entity.name,
+                        description: entity.description || ''
+                    });
+                    break;
+                case 'event':
+                    addEventToCanon({
+                        name: entity.name,
+                        description: entity.description || '',
+                        when: ''
+                    });
+                    break;
+            }
+        });
+
+        // Notify parent component
+        if (onCanonUpdate) {
+            onCanonUpdate();
+        }
+
+        setGuardianDialogOpen(false);
+        setExtractionResult(null);
+    };
 
     return (
         <div className="h-full flex flex-col overflow-hidden">
@@ -248,6 +352,7 @@ export default function NarrativeWorkspace({
                         ref={textAreaRef}
                         value={currentText}
                         onChange={(e) => !isReadOnly && setText(e.target.value)}
+                        onBlur={handleBlur}
                         placeholder={t.startWriting || "Start your scene here..."}
                         readOnly={isReadOnly}
                         className={cn(
@@ -293,6 +398,30 @@ export default function NarrativeWorkspace({
                     </div>
                 </div>
             </div>
+
+            {/* Guardian Dialog for canon changes */}
+            <GuardianDialog
+                isOpen={guardianDialogOpen}
+                result={extractionResult}
+                onConfirm={handleConfirmCanonChanges}
+                onReject={() => {
+                    setGuardianDialogOpen(false);
+                    setExtractionResult(null);
+                }}
+                onClose={() => {
+                    setGuardianDialogOpen(false);
+                    setExtractionResult(null);
+                }}
+                showOnboarding={false} // TODO: Track first-time user
+            />
+
+            {/* Extraction loading indicator (optional) */}
+            {isExtracting && (
+                <div className="fixed bottom-4 right-4 bg-violet-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
+                    <Sparkles size={14} className="animate-pulse" />
+                    <span className="text-sm font-medium">Аналізую зміни...</span>
+                </div>
+            )}
         </div>
     );
 }
