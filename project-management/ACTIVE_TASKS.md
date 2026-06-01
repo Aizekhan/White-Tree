@@ -5,13 +5,16 @@
 
 ---
 
-## 🧬 Canon System Migration - Phase 1: Foundation (COMPLETE ✅)
+## 🧬 Canon System Migration (Working with Claude Design handoff)
 
 **Context:** Міграція WhiteWrite у Canon-Aware архітектуру. Handoff від Claude Design.
-**Date:** 2026-06-01
-**Status:** Phase 1 COMPLETE ✅ (темний деплой - типи існують, не використовуються)
+**Started:** 2026-06-01
+**Status:** Phase 2 COMPLETE ✅ | Phase 3 Ready
 
-### ✅ Phase 1 Completed (Dark Deploy)
+### ✅ Phase 1: Foundation (COMPLETE ✅)
+**Date:** 2026-06-01
+**Status:** Темний деплой - типи існують, не використовуються
+
 - [x] Прочитати handoff від Claude Design (CANON_SCHEMA.md, SESSION_DIGEST.md)
 - [x] Додати інваріанти в CLAUDE.md (2 розділи)
 - [x] Створити `src/canon/canonTypes.ts` (Canon* інтерфейси)
@@ -20,11 +23,29 @@
 - [x] Оновити Firestore rules для підтримки canon поля
 - [x] Створити smoke test `deriveMemory.test.ts` (✅ PASS)
 
-### 🔄 Phase 2: Content Population (Next)
-- [ ] Додати режим `EXTRACT_CANON` в AIEngine.ts
-- [ ] Створити міграційний скрипт backfill (memory+arch → canon inferred)
-- [ ] Створити UI черги підтвердження inferred сутностей (Memory Panel)
-- Status: Ready to start
+### ✅ Phase 2: Content Population (COMPLETE ✅)
+**Date:** 2026-06-01
+**Commits:** `581f662`, `90f9386`
+
+- [x] **Phase 2.1:** Додати режим `EXTRACT_CANON` в AIEngine.ts + extractCanonPrompt.ts
+- [x] **Phase 2.2:** Створити функцію backfillProjectCanon (memory+arch → canon inferred)
+- [x] **Phase 2.4:** Офлайн тест доводить безпеку міграції (5 тестів ✅ PASS)
+- [x] **Phase 2.3:** UI черга підтвердження (CanonConfirmationQueue component)
+  - [x] Створити CanonConfirmationQueue.tsx
+  - [x] Інтегрувати в NarrativeMemoryPanel
+  - [x] Додати setCanon в useStoryStore
+  - [x] Handlers: Confirm/Reject/Edit (Edit = placeholder)
+  - [x] Тестова сторінка: canon-test.html (standalone demo)
+
+**Key Guarantees Proven:**
+- ✅ Всі entity origin.confirmed === false (inferred)
+- ✅ deriveMemory(inferredCanon) returns empty (migration safe)
+- ✅ Stable IDs prevent graph breakage on rename
+- ✅ No behavior changes until user explicitly confirms entities
+
+**Demo:** http://localhost:3000/canon-test.html
+
+### 🔄 Phase 3: Flip Source (Next - High Risk)
 
 ### 📋 Phase 3: Flip Source (High Risk)
 - [ ] Створити `useCanonManagement.ts` хук (applyMemorySuggestion → canon)

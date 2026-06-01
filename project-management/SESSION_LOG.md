@@ -4,6 +4,85 @@
 
 ---
 
+## 📅 Session 9: Canon System Phase 2 (Content Population) ✅
+**Date:** 2026-06-01
+**Duration:** ~3 години
+**AI Agent:** Claude Code (Sonnet 4.5)
+**Human:** Aizekhan
+**Collaboration:** Claude Design handoff (working with design documents)
+
+### What We Did
+- [x] **Phase 2.1:** Додав режим EXTRACT_CANON в AIEngine.ts + extractCanonPrompt.ts
+- [x] **Phase 2.2:** Створив backfillProjectCanon функцію (витягує canon з проєкту)
+- [x] **Phase 2.4:** Офлайн тест phase2.test.ts (5 тестів ✅ PASS) — доводить безпеку міграції
+- [x] **Phase 2.3:** UI черга підтвердження inferred entities
+  - [x] CanonConfirmationQueue.tsx (component з gradient design)
+  - [x] Інтегрував в NarrativeMemoryPanel.tsx
+  - [x] Додав setCanon в useStoryStore.ts
+  - [x] Handlers: handleConfirmCanonEntity, handleRejectCanonEntity, handleEditCanonEntity
+  - [x] Тестова сторінка canon-test.html (standalone demo)
+
+### 🎉 WHAT GAVE WOW EFFECT
+- **Offline тест доводить безпеку міграції** — `deriveMemory(inferredCanon)` returns empty, поведінка не зміниться
+- **Confidence badges на UI** — користувач бачить 70%-100% впевненість AI
+- **Standalone тестова сторінка** — можна демо без повної інтеграції в AppRoot
+- **Phase 2 завершена повністю** — extraction + UI + тести за одну сесію
+
+### ⚠️ WHAT WAS TIME WASTE
+- **App.tsx не використовується** — інтегрували туди, але AppRoot.tsx це entry point
+- Довелося створити canon-test.html для демонстрації UI
+
+### 📸 Visual Milestones (Screenshot Commits)
+- Commit `581f662`: CanonConfirmationQueue UI (gradient violet→amber, entity cards з кнопками)
+- Commit `90f9386`: canon-test.html standalone demo page
+
+### Key Decisions Made
+- **Фази 2.3 і 2.4 поміняли місцями** — спочатку тести (безпека), потім UI
+- **Edit modal відкладено до Phase 2.3.1** — поки placeholder alert
+- **Standalone test page** — краще демо ніж ламати AppRoot інтеграцію
+- **App.tsx deprecated** — AppRoot.tsx це актуальний entry point
+
+### Code Changes
+**Files Created:**
+- `src/canon/extractCanonPrompt.ts` (110 рядків)
+- `src/canon/backfillCanon.ts` (60 рядків)
+- `src/canon/phase2.test.ts` (256 рядків) — offline safety test
+- `src/features/memory/components/CanonConfirmationQueue.tsx` (260 рядків)
+- `canon-test.html` (372 рядки) — standalone demo
+- `test-backfill.html`, `scripts/runBackfillTestClient.mjs` (experimental, не юзаються)
+
+**Files Modified:**
+- `src/services/AIEngine.ts` (+30 рядків: EXTRACT_CANON mode)
+- `src/types.ts` (+1 рядок: NarrativeMode.EXTRACT_CANON)
+- `src/store/useStoryStore.ts` (+20 рядків: setCanon function)
+- `src/features/memory/components/NarrativeMemoryPanel.tsx` (+15 рядків: canon props)
+- `src/App.tsx` (+100 рядків: canon state + handlers, але не використовується!)
+
+### Insights
+- **Offline тест > live integration тест** — швидше, стабільніше, доводить гарантії
+- **Phase reordering працює** — user request змінити порядок був правильний
+- **Canon UI ready** — потрібна лише інтеграція в AppRoot/ContextualWritingWorkspace
+- **Claude Design handoff = gold** — extractCanonPrompt.ts був готовий, просто інтегрували
+
+### Blockers / Issues
+- **App.tsx не використовується** — AppRoot.tsx це entry point, Canon UI не видно в основному додатку
+- **Canon integration відкладено** — потребує інтеграцію в ContextualWritingWorkspace або окремий Canon Manager view
+
+### Next Steps
+1. **Phase 3:** useCanonManagement.ts хук (applyMemorySuggestion → canon)
+2. **Phase 3:** Flip джерела (memory → canon → deriveMemory, за флагом canonAware)
+3. **Phase 3:** De-risk check (deepEqual перед flip)
+4. **Інтегрувати Canon UI в AppRoot** або створити Canon Manager view
+5. **Phase 4:** SceneIntent + storyMap з canon-графа
+
+### Important Notes
+- **Phase 2 COMPLETE ✅** — extraction працює, UI готовий, тести пройшли
+- **Test URL:** http://localhost:3000/canon-test.html
+- **Migration safety proven:** deriveMemory returns empty for unconfirmed entities
+- **Коміти:** `581f662` (UI), `90f9386` (test page)
+
+---
+
 ## 📅 Session 8: Canon System Foundation (Phase 1 - Dark Deploy)
 **Date:** 2026-06-01
 **Duration:** ~2 години
