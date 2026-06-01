@@ -4,6 +4,74 @@
 
 ---
 
+## 📅 Session 8: Canon System Foundation (Phase 1 - Dark Deploy)
+**Date:** 2026-06-01
+**Duration:** ~2 години
+**AI Agent:** Claude Code (Sonnet 4.5)
+**Human:** Aizekhan
+**Collaboration:** Claude Design (handoff через `C:\Users\Admin\Downloads\White\handoff`)
+
+### What We Did
+- [x] Прочитав handoff від Claude Design (CANON_SCHEMA.md, SESSION_DIGEST.md, CLAUDE_invariants.md)
+- [x] Додав інваріанти Canon System в CLAUDE.md (2 нові розділи)
+- [x] Створив `src/canon/canonTypes.ts` (Canon* інтерфейси з CANON_SCHEMA)
+- [x] Інтегрував `deriveMemory.ts` (Canon → NarrativeMemory bridge)
+- [x] Додав `canon?` + `canonAware?` поля до Project interface
+- [x] Оновив Firestore rules (коментар про підтримку canon)
+- [x] Створив smoke test `deriveMemory.test.ts` (✅ PASS)
+
+### 🎉 WHAT GAVE WOW EFFECT
+- **Handoff від Claude Design працює ідеально** — готові файли (deriveMemory.ts, extractCanonPrompt.ts), повна специфікація
+- **4-фазна міграція з де-ризиком** — `deepEqual(deriveMemory(canon), oldMemory)` перед flip джерела
+- **Memory = View** інваріант — genius, AIEngine не треба чіпати
+
+### ⚠️ WHAT WAS TIME WASTE
+- Нічого — Claude Design підготував все ідеально, просто інтегрував
+
+### 📸 Visual Milestones (Screenshot Commits)
+- N/A (Phase 1 = темний деплой, типи існують але не використовуються)
+
+### Key Decisions Made
+- **Фаза 1 = темний деплой:** типи + deriveMemory існують, але НЕ використовуються в поведінці
+- **Маленькі атомарні коміти:** кожна фаза окремий коміт (не збирати всі 4 фази разом)
+- **memory лишається джерелом до Фази 3** — гард проти breaking changes
+
+### Code Changes
+**Files Created:**
+- `src/canon/canonTypes.ts` (280 рядків)
+- `src/canon/deriveMemory.ts` (79 рядків)
+- `src/canon/deriveMemory.test.ts` (39 рядків)
+- `src/canon/index.ts` (5 рядків)
+
+**Files Modified:**
+- `CLAUDE.md` (+80 рядків: інваріанти + філософія наративу)
+- `src/types.ts` (+3 рядки: імпорт ProjectCanon, canon?, canonAware?)
+- `firestore.rules` (+1 рядок: коментар)
+- `project-management/NARRATIVE_GENERATION_LOGIC.md` (створено раніше)
+
+### Insights
+- **Canon-Aware = еволюція, не заміна** — всі існуючі системи (auth, save-queue, AI режими) лишаються
+- **Explicit vs Inferred** — гениальна стратегія міграції (AI пропонує, користувач підтверджує)
+- **opaque ID + slug + name** — перейменування не ламає граф (стабільні звʼязки)
+- **Collaboration з Claude Design працює** — чіткий поділ ролей (архітектор vs виконавець)
+
+### Blockers / Issues
+- Нічого
+
+### Next Steps
+1. **ФАЗА 2:** Режим EXTRACT_CANON в AIEngine.ts
+2. **ФАЗА 2:** Міграційний скрипт backfill (memory+arch → canon inferred)
+3. **ФАЗА 2:** UI черги підтвердження inferred сутностей
+4. **ФАЗА 3:** Хук useCanonManagement.ts (applyMemorySuggestion → canon)
+5. **ФАЗА 3:** Flip джерела (memory → canon → deriveMemory, за флагом)
+
+### Important Notes
+- **Гард Фази 1 виконано:** типи існують, deriveMemory працює, але НЕ підключені до поведінки
+- **Smoke test пройшов:** deriveMemory(emptyCanon) повертає правильну форму NarrativeMemory
+- **Код готовий до коміту** — маленький, цілісний, "темний" (легкий rollback)
+
+---
+
 ## 📅 Session 1: Project Discovery & Foundation Setup
 **Date:** 2026-05-27
 **Duration:** ~2 hours

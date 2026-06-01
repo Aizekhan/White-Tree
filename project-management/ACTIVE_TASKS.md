@@ -1,7 +1,41 @@
 # Active Tasks
 
-**Last Updated:** 2026-05-28
-**Current Sprint:** Phase 1 - Real Backend Integration Complete
+**Last Updated:** 2026-06-01
+**Current Sprint:** Canon System Migration (Phase 1 COMPLETE ✅)
+
+---
+
+## 🧬 Canon System Migration - Phase 1: Foundation (COMPLETE ✅)
+
+**Context:** Міграція WhiteWrite у Canon-Aware архітектуру. Handoff від Claude Design.
+**Date:** 2026-06-01
+**Status:** Phase 1 COMPLETE ✅ (темний деплой - типи існують, не використовуються)
+
+### ✅ Phase 1 Completed (Dark Deploy)
+- [x] Прочитати handoff від Claude Design (CANON_SCHEMA.md, SESSION_DIGEST.md)
+- [x] Додати інваріанти в CLAUDE.md (2 розділи)
+- [x] Створити `src/canon/canonTypes.ts` (Canon* інтерфейси)
+- [x] Інтегрувати `deriveMemory.ts` (Canon → NarrativeMemory bridge)
+- [x] Додати `canon?` + `canonAware?` до Project interface
+- [x] Оновити Firestore rules для підтримки canon поля
+- [x] Створити smoke test `deriveMemory.test.ts` (✅ PASS)
+
+### 🔄 Phase 2: Content Population (Next)
+- [ ] Додати режим `EXTRACT_CANON` в AIEngine.ts
+- [ ] Створити міграційний скрипт backfill (memory+arch → canon inferred)
+- [ ] Створити UI черги підтвердження inferred сутностей (Memory Panel)
+- Status: Ready to start
+
+### 📋 Phase 3: Flip Source (High Risk)
+- [ ] Створити `useCanonManagement.ts` хук (applyMemorySuggestion → canon)
+- [ ] Перенаправити записи memory → canon → deriveMemory (за флагом canonAware)
+- [ ] Додати де-ризик перевірку `deepEqual(deriveMemory(canon), oldMemory)`
+- Status: Blocked by Phase 2
+
+### 📋 Phase 4: Derived Features
+- [ ] Додати SceneIntent + canon-лінки до ArchitectScene
+- [ ] Імплементувати storyMap як похідний від canon-графа (замість AI generation)
+- Status: Blocked by Phase 3
 
 ---
 
