@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canon UI Test - Phase 2.3</title>
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@19?dev",
+            "react-dom/client": "https://esm.sh/react-dom@19/client?dev",
+            "motion/react": "https://esm.sh/motion@11.14.4/react?dev",
+            "lucide-react": "https://esm.sh/lucide-react@0.469.0"
+        }
+    }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        #root {
+            max-width: 420px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .info {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .info code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Canon UI Test</h1>
+        <p style="opacity: 0.9; margin-top: 8px; font-size: 14px;">Phase 2.3 - Confirmation Queue Component</p>
+    </div>
+
+    <div class="info">
+        <strong>Інструкція:</strong>
+        <ol style="margin-top: 10px; padding-left: 20px; font-size: 14px; line-height: 1.6;">
+            <li>Натисніть кнопку <code>🧪 Test Canon</code></li>
+            <li>Відкрийте панель <code>Memory</code></li>
+            <li>Побачите блок "AI-запропоновані сутності"</li>
+            <li>Протестуйте кнопки: Підтвердити / Редагувати / Відхилити</li>
+        </ol>
+    </div>
+
+    <div id="root"></div>
+
+    <script type="module">
+        import React, { useState } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { AnimatePresence, motion } from 'motion/react';
+        import { Sparkles, MapPin, Clock, Users, Package, Zap, Check, X, Edit2, History } from 'lucide-react';
+
+        // Mock canon data (same as in App.tsx)
+        const MOCK_CANON = {
+            characters: [
+                {
+                    id: "char_krig",
+                    slug: "krig",
+                    name: "Кріг",
+                    type: "characters",
+                    role: "Дослідник",
+                    trait: "Цілеспрямований",
+                    goal: "Знайти джерело сигналу",
+                    developmentArc: "Від скептика до віруючого",
+                    origin: { source: "inferred", confidence: 0.9, confirmed: false, createdBy: "migration", updatedAt: Date.now() },
+                    relations: [{ id: "char_ivy", kind: "довіряє", confidence: 0.8 }]
+                },
+                {
+                    id: "char_ivy",
+                    slug: "aivi",
+                    name: "Айві",
+                    type: "characters",
+                    role: "Технік",
+                    trait: "Розумна",
+                    goal: "Розшифрувати сигнал",
+                    developmentArc: "Навчається довіряти інтуїції",
+                    origin: { source: "inferred", confidence: 0.85, confirmed: false, createdBy: "migration", updatedAt: Date.now() }
+                }
+            ],
+            locations: [
+                {
+                    id: "loc_horizon",
+                    slug: "stantsiya-gorizont",
+                    name: "Станція \"Горизонт\"",
+                    type: "locations",
+                    desc: "Арктична дослідна база",
+                    origin: { source: "inferred", confidence: 0.95, confirmed: false, createdBy: "migration", updatedAt: Date.now() }
+                }
+            ],
+            events: [
+                {
+                    id: "evt_signal",
+                    slug: "viyavlennya-signalu",
+                    name: "Виявлення сигналу",
+                    type: "events",
+                    when: "День 1",
+                    act: 1,
+                    origin: { source: "inferred", confidence: 1.0, confirmed: false, createdBy: "migration", updatedAt: Date.now() }
+                }
+            ],
+            factions: [],
+            artifacts: [],
+            world: { rules: [] }
+        };
+
+        function TestApp() {
+            const [canon, setCanon] = useState(null);
+            const [showMemory, setShowMemory] = useState(false);
+
+            const loadCanon = () => {
+                setCanon(MOCK_CANON);
+                setShowMemory(true);
+                console.log('[Test] Canon loaded, memory panel opened');
+            };
+
+            const handleConfirm = (id, type) => {
+                console.log(`[Test] Confirmed: ${type}/${id}`);
+                setCanon(prev => {
+                    if (!prev) return prev;
+                    return {
+                        ...prev,
+                        [type]: prev[type].filter(e => e.id !== id)
+                    };
+                });
+            };
+
+            const handleReject = (id, type) => {
+                console.log(`[Test] Rejected: ${type}/${id}`);
+                setCanon(prev => {
+                    if (!prev) return prev;
+                    return {
+                        ...prev,
+                        [type]: prev[type].filter(e => e.id !== id)
+                    };
+                });
+            };
+
+            const handleEdit = (entity) => {
+                alert(`Редагувати: ${entity.name}\n\n(Edit modal coming in Phase 2.3.1)`);
+            };
+
+            // Count inferred entities
+            const inferredCount = canon ? [
+                ...canon.characters,
+                ...canon.locations,
+                ...canon.events
+            ].filter(e => !e.origin?.confirmed).length : 0;
+
+            return React.createElement('div', { style: { background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }},
+                // Header
+                React.createElement('div', { style: { padding: '20px', borderBottom: '1px solid #e5e5e5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }},
+                    React.createElement('div', {},
+                        React.createElement('h2', { style: { fontSize: '18px', fontWeight: 'bold', marginBottom: '4px' }}, 'Canon Test UI'),
+                        React.createElement('p', { style: { fontSize: '12px', color: '#999' }}, 'Phase 2.3 Demonstration')
+                    ),
+                    React.createElement('button', {
+                        onClick: () => setShowMemory(!showMemory),
+                        style: {
+                            padding: '8px 16px',
+                            background: showMemory ? '#1a1a1a' : '#f0f0f0',
+                            color: showMemory ? 'white' : '#1a1a1a',
+                            border: 'none',
+                            borderRadius: '20px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                        }
+                    },
+                        React.createElement(History, { size: 16 }),
+                        'Memory',
+                        inferredCount > 0 && React.createElement('span', {
+                            style: {
+                                background: '#ff6b6b',
+                                color: 'white',
+                                borderRadius: '10px',
+                                padding: '2px 6px',
+                                fontSize: '11px',
+                                fontWeight: 'bold'
+                            }
+                        }, inferredCount)
+                    )
+                ),
+
+                // Load button
+                !canon && React.createElement('div', { style: { padding: '40px 20px', textAlign: 'center' }},
+                    React.createElement('button', {
+                        onClick: loadCanon,
+                        style: {
+                            padding: '12px 24px',
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontSize: '16px',
+                            fontWeight: 'bold'
+                        }
+                    }, '🧪 Load Test Canon')
+                ),
+
+                // Memory Panel (simple version)
+                showMemory && canon && React.createElement('div', { style: { padding: '20px', background: '#fafafa', maxHeight: '600px', overflowY: 'auto' }},
+                    // Queue header
+                    React.createElement('div', { style: { marginBottom: '16px' }},
+                        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }},
+                            React.createElement('div', { style: { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '8px', borderRadius: '8px' }},
+                                React.createElement(Sparkles, { size: 16, color: 'white' })
+                            ),
+                            React.createElement('div', {},
+                                React.createElement('h3', { style: { fontSize: '16px', fontWeight: 'bold' }}, 'AI-запропоновані сутності'),
+                                React.createElement('p', { style: { fontSize: '11px', color: '#999', textTransform: 'uppercase', letterSpacing: '0.5px' }},
+                                    `${inferredCount} ${inferredCount === 1 ? 'сутність' : 'сутностей'} потребує підтвердження`
+                                )
+                            )
+                        ),
+                        React.createElement('div', { style: { background: '#eef2ff', border: '1px solid #c7d2fe', borderRadius: '8px', padding: '12px', fontSize: '12px', color: '#4c1d95', lineHeight: '1.5' }},
+                            React.createElement('strong', {}, 'Інферовані сутності'),
+                            ' — це те, що AI витягнув з вашого тексту. Вони не впливають на генерацію, поки ви їх не підтвердите.'
+                        )
+                    ),
+
+                    // Entity cards
+                    React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' }},
+                        [...canon.characters, ...canon.locations, ...canon.events].filter(e => !e.origin?.confirmed).map(entity => {
+                            const confidence = Math.round((entity.origin?.confidence ?? 0.5) * 100);
+                            const Icon = entity.type === 'characters' ? Users : entity.type === 'locations' ? MapPin : Clock;
+
+                            return React.createElement('div', {
+                                key: entity.id,
+                                style: {
+                                    background: 'linear-gradient(135deg, #faf5ff 0%, #fef3c7 100%)',
+                                    border: '1px solid #e9d5ff',
+                                    borderRadius: '12px',
+                                    padding: '16px'
+                                }
+                            },
+                                // Header
+                                React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }},
+                                    React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' }},
+                                        React.createElement('div', { style: { background: '#ddd6fe', color: '#7c3aed', padding: '8px', borderRadius: '8px' }},
+                                            React.createElement(Icon, { size: 16 })
+                                        ),
+                                        React.createElement('div', {},
+                                            React.createElement('h4', { style: { fontSize: '14px', fontWeight: 'bold' }}, entity.name),
+                                            React.createElement('span', { style: { fontSize: '10px', textTransform: 'uppercase', color: '#7c3aed', fontWeight: 'bold', letterSpacing: '0.5px' }},
+                                                entity.type === 'characters' ? 'Персонаж' : entity.type === 'locations' ? 'Локація' : 'Подія'
+                                            )
+                                        )
+                                    ),
+                                    React.createElement('div', { style: { background: '#fef3c7', padding: '4px 8px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '4px' }},
+                                        React.createElement(Sparkles, { size: 10, color: '#d97706' }),
+                                        React.createElement('span', { style: { fontSize: '10px', fontWeight: 'bold', color: '#92400e' }}, `${confidence}%`)
+                                    )
+                                ),
+
+                                // Details
+                                entity.role && React.createElement('div', { style: { fontSize: '11px', marginBottom: '4px' }},
+                                    React.createElement('span', { style: { color: '#999', textTransform: 'uppercase', fontSize: '10px', marginRight: '8px' }}, 'Role:'),
+                                    entity.role
+                                ),
+                                entity.trait && React.createElement('div', { style: { fontSize: '11px', marginBottom: '4px' }},
+                                    React.createElement('span', { style: { color: '#999', textTransform: 'uppercase', fontSize: '10px', marginRight: '8px' }}, 'Trait:'),
+                                    entity.trait
+                                ),
+                                entity.goal && React.createElement('div', { style: { fontSize: '11px', marginBottom: '4px' }},
+                                    React.createElement('span', { style: { color: '#999', textTransform: 'uppercase', fontSize: '10px', marginRight: '8px' }}, 'Goal:'),
+                                    entity.goal
+                                ),
+                                entity.desc && React.createElement('div', { style: { fontSize: '11px', marginBottom: '4px' }},
+                                    React.createElement('span', { style: { color: '#999', textTransform: 'uppercase', fontSize: '10px', marginRight: '8px' }}, 'Desc:'),
+                                    entity.desc
+                                ),
+                                entity.when && React.createElement('div', { style: { fontSize: '11px', marginBottom: '4px' }},
+                                    React.createElement('span', { style: { color: '#999', textTransform: 'uppercase', fontSize: '10px', marginRight: '8px' }}, 'When:'),
+                                    entity.when
+                                ),
+
+                                // Actions
+                                React.createElement('div', { style: { display: 'flex', gap: '8px', marginTop: '12px' }},
+                                    React.createElement('button', {
+                                        onClick: () => handleConfirm(entity.id, entity.type),
+                                        style: {
+                                            flex: 1,
+                                            background: '#10b981',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            padding: '8px',
+                                            fontSize: '12px',
+                                            fontWeight: 'bold',
+                                            textTransform: 'uppercase',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '4px'
+                                        }
+                                    },
+                                        React.createElement(Check, { size: 14 }),
+                                        'Підтвердити'
+                                    ),
+                                    React.createElement('button', {
+                                        onClick: () => handleEdit(entity),
+                                        style: {
+                                            background: '#ddd6fe',
+                                            color: '#7c3aed',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            padding: '8px 12px',
+                                            cursor: 'pointer'
+                                        }
+                                    },
+                                        React.createElement(Edit2, { size: 14 })
+                                    ),
+                                    React.createElement('button', {
+                                        onClick: () => handleReject(entity.id, entity.type),
+                                        style: {
+                                            background: '#fee2e2',
+                                            color: '#dc2626',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            padding: '8px 12px',
+                                            cursor: 'pointer'
+                                        }
+                                    },
+                                        React.createElement(X, { size: 14 })
+                                    )
+                                )
+                            );
+                        })
+                    ),
+
+                    inferredCount === 0 && React.createElement('div', { style: { textAlign: 'center', padding: '40px 20px', color: '#999' }},
+                        React.createElement('p', { style: { fontSize: '14px' }}, '✅ Всі сутності підтверджені!')
+                    )
+                )
+            );
+        }
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(React.createElement(TestApp));
+    </script>
+</body>
+</html>
