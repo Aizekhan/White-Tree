@@ -1,17 +1,18 @@
 import { useEffect, useRef, useMemo } from 'react';
-import { 
-    collection, 
-    query, 
-    where, 
-    onSnapshot, 
-    doc, 
-    updateDoc, 
-    Timestamp 
+import {
+    collection,
+    query,
+    where,
+    onSnapshot,
+    doc,
+    updateDoc,
+    Timestamp
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useStoryStore } from '../store/useStoryStore';
 import { Project } from '../types';
 import { User } from 'firebase/auth';
+import { deriveMemory } from '../canon/deriveMemory';
 
 export const useProjectState = (user: User | null) => {
     const store = useStoryStore();
@@ -130,8 +131,16 @@ export const useProjectState = (user: User | null) => {
         isLoadingNewProject.current = true;
         setIsHydrating(true); // START HYDRATION
         lastLoadedProjectId.current = activeProjectId;
-        
+
         loadProjectState(projectToLoad);
+
+        // [PHASE 4] Canon-aware auto-derivation
+        // If project has canon and canonAware flag is true, derive memory from canon
+        if (projectToLoad.canonAware && projectToLoad.canon) {
+            console.log('[CANON] Auto-deriving memory from canon (canonAware=true)');
+            const derivedMemory = deriveMemory(projectToLoad.canon);
+            setMemory(derivedMemory);
+        }
 
         isProjectLoaded.current = true;
         hasSyncedForCurrentProject.current = true;
