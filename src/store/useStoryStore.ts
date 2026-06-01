@@ -6,6 +6,7 @@ import {
     StoryArchitecture,
     EngineLog
 } from '../types';
+import { ProjectCanon } from '../canon';
 
 interface StoryState {
     // Project State
@@ -62,6 +63,7 @@ interface StoryState {
     setActiveScene: (scene: any) => void;
     setTokens: (tokens: number) => void;
     setMemory: (memory: NarrativeMemory | ((prev: NarrativeMemory) => NarrativeMemory)) => void;
+    setCanon: (canon: ProjectCanon | ((prev: ProjectCanon | undefined) => ProjectCanon)) => void;
     setEngineLogs: (logs: EngineLog[] | ((prev: EngineLog[]) => EngineLog[])) => void;
     setSaveStatus: (status: 'idle' | 'saving' | 'saved' | 'error') => void;
     setSaveQueue: (queue: Promise<void>) => void;
@@ -227,6 +229,26 @@ export const useStoryStore = create<StoryState>((set, get) => ({
         memory: typeof memoryUpdater === 'function' ? memoryUpdater(state.memory) : memoryUpdater,
         isDirty: true
     })),
+
+    setCanon: (canonUpdater) => {
+        set((state) => {
+            const activeProject = state.projects.find(p => p.id === state.activeProjectId);
+            if (!activeProject) return state;
+
+            const newCanon = typeof canonUpdater === 'function'
+                ? canonUpdater(activeProject.canon)
+                : canonUpdater;
+
+            return {
+                projects: state.projects.map(p =>
+                    p.id === state.activeProjectId
+                        ? { ...p, canon: newCanon }
+                        : p
+                ),
+                isDirty: true
+            };
+        });
+    },
 
     setEngineLogs: (logsUpdater) => set((state) => ({
         engineLogs: typeof logsUpdater === 'function' ? logsUpdater(state.engineLogs) : logsUpdater

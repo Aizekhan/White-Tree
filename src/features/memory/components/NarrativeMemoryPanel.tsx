@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Users, X, MapPin, Clock, Zap, History, Plus } from "lucide-react";
 import { Character, NarrativeMemory } from "../../../types";
+import { ProjectCanon, CanonBase } from "../../../canon";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import CanonConfirmationQueue from "./CanonConfirmationQueue";
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -208,6 +210,7 @@ const MemorySection = ({ title, icon: Icon, items, onAdd, onRemove }: {
 
 export interface NarrativeMemoryPanelProps {
     memory: NarrativeMemory;
+    canon?: ProjectCanon;
     showMemory: boolean;
     setShowMemory: (show: boolean) => void;
     t: any;
@@ -216,10 +219,14 @@ export interface NarrativeMemoryPanelProps {
     onRemoveCharacter: (idx: number) => void;
     onAddStringMemory: (key: keyof Omit<NarrativeMemory, 'characters'>, value: string) => void;
     onRemoveStringMemory: (key: keyof NarrativeMemory, index: number) => void;
+    onConfirmCanonEntity?: (entityId: string, entityType: string) => void;
+    onRejectCanonEntity?: (entityId: string, entityType: string) => void;
+    onEditCanonEntity?: (entity: CanonBase, entityType: string) => void;
 }
 
 export default function NarrativeMemoryPanel({
     memory,
+    canon,
     showMemory,
     setShowMemory,
     t,
@@ -227,7 +234,10 @@ export default function NarrativeMemoryPanel({
     onAddCharacter,
     onRemoveCharacter,
     onAddStringMemory,
-    onRemoveStringMemory
+    onRemoveStringMemory,
+    onConfirmCanonEntity,
+    onRejectCanonEntity,
+    onEditCanonEntity
 }: NarrativeMemoryPanelProps) {
     return (
         <div className="flex flex-col h-full bg-white overflow-y-auto p-6 scrollbar-hide">
@@ -240,6 +250,16 @@ export default function NarrativeMemoryPanel({
                     {t.reset}
                 </button>
             </div>
+
+            {/* Canon Confirmation Queue — AI-proposed entities that need confirmation */}
+            {canon && onConfirmCanonEntity && onRejectCanonEntity && onEditCanonEntity && (
+                <CanonConfirmationQueue
+                    canon={canon}
+                    onConfirm={onConfirmCanonEntity}
+                    onReject={onRejectCanonEntity}
+                    onEdit={onEditCanonEntity}
+                />
+            )}
 
             <CharacterTracker
                 characters={memory.characters}

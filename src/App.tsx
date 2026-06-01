@@ -35,24 +35,26 @@ import { GoogleGenAI, Type } from "@google/genai";
 import ReactMarkdown from "react-markdown";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { 
-  NarrativeMode, 
-  NarrativeAspect, 
-  NarrativeMemory, 
-  AnalysisResult, 
-  Character, 
-  DetailedScores, 
-  EditorSuggestion, 
-  ConsistencyIssue, 
-  StoryStage, 
-  TensionPoint, 
-  NarrativeNode, 
+import {
+  NarrativeMode,
+  NarrativeAspect,
+  NarrativeMemory,
+  AnalysisResult,
+  Character,
+  DetailedScores,
+  EditorSuggestion,
+  ConsistencyIssue,
+  StoryStage,
+  TensionPoint,
+  NarrativeNode,
   NarrativeLink, 
   QuickFix,
   NarrativeForm,
   ArchitectNarrativeMode,
   NarrativeMedium
 } from "./types";
+import { ProjectCanon, CanonBase } from "./canon";
+import NarrativeMemoryPanel from "./features/memory/components/NarrativeMemoryPanel";
 import StoryMap from "./components/StoryMap";
 
 function cn(...inputs: ClassValue[]) {
@@ -95,6 +97,102 @@ export default function App() {
     worldRules: [],
     plotEvents: [],
   });
+
+  // Canon System state (Phase 2.3 — inferred entities confirmation queue)
+  const [canon, setCanon] = useState<ProjectCanon | undefined>(undefined);
+
+  // Load test canon data for demo (Phase 2.3)
+  const loadTestCanon = () => {
+    setCanon({
+      characters: [
+        {
+          id: "char_krig",
+          slug: "krig",
+          name: "Кріг",
+          type: "characters",
+          role: "Дослідник",
+          trait: "Цілеспрямований",
+          goal: "Знайти джерело сигналу",
+          developmentArc: "Від скептика до віруючого",
+          origin: { source: "inferred", confidence: 0.9, confirmed: false, createdBy: "migration", updatedAt: Date.now() },
+          relations: [{ id: "char_ivy", kind: "довіряє", confidence: 0.8 }]
+        },
+        {
+          id: "char_ivy",
+          slug: "aivi",
+          name: "Айві",
+          type: "characters",
+          role: "Технік",
+          trait: "Розумна",
+          goal: "Розшифрувати сигнал",
+          developmentArc: "Навчається довіряти інтуїції",
+          origin: { source: "inferred", confidence: 0.85, confirmed: false, createdBy: "migration", updatedAt: Date.now() }
+        },
+        {
+          id: "char_victor",
+          slug: "viktor",
+          name: "Віктор",
+          type: "characters",
+          role: "Командир",
+          trait: "Авторитарний",
+          goal: "Зберегти секретність",
+          developmentArc: "Розкриває приховану мотивацію",
+          origin: { source: "inferred", confidence: 0.7, confirmed: false, createdBy: "migration", updatedAt: Date.now() }
+        }
+      ],
+      locations: [
+        {
+          id: "loc_horizon",
+          slug: "stantsiya-gorizont",
+          name: "Станція \"Горизонт\"",
+          type: "locations",
+          desc: "Арктична дослідна база",
+          origin: { source: "inferred", confidence: 0.95, confirmed: false, createdBy: "migration", updatedAt: Date.now() }
+        },
+        {
+          id: "loc_lab",
+          slug: "pidzemna-laboratoriya",
+          name: "Підземна лабораторія",
+          type: "locations",
+          desc: "Секретний об'єкт під льодом",
+          origin: { source: "inferred", confidence: 0.8, confirmed: false, createdBy: "migration", updatedAt: Date.now() }
+        }
+      ],
+      events: [
+        {
+          id: "evt_signal",
+          slug: "viyavlennya-signalu",
+          name: "Виявлення сигналу",
+          type: "events",
+          when: "День 1",
+          act: 1,
+          origin: { source: "inferred", confidence: 1.0, confirmed: false, createdBy: "migration", updatedAt: Date.now() }
+        },
+        {
+          id: "evt_decode",
+          slug: "rozshifrovka",
+          name: "Розшифровка",
+          type: "events",
+          when: "День 3",
+          act: 2,
+          origin: { source: "inferred", confidence: 0.9, confirmed: false, createdBy: "migration", updatedAt: Date.now() }
+        }
+      ],
+      factions: [],
+      artifacts: [
+        {
+          id: "art_signal",
+          slug: "anomalnyi-signal",
+          name: "Аномальний сигнал",
+          type: "artifacts",
+          desc: "Загадкова передача з глибин льоду",
+          origin: { source: "inferred", confidence: 1.0, confirmed: false, createdBy: "migration", updatedAt: Date.now() }
+        }
+      ],
+      world: { rules: ["Сигнал йде з глибин льоду", "Температура критична", "Зв'язок обмежений"] }
+    });
+    console.log("[Canon] Loaded test canon data (7 inferred entities)");
+  };
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [copied, setCopied] = useState(false);
@@ -795,6 +893,55 @@ ${mode === NarrativeMode.ARCHITECT ? "Generate a full story architecture with ac
     }));
   };
 
+  // Canon handlers (Phase 2.3)
+  const handleConfirmCanonEntity = (entityId: string, entityType: string) => {
+    if (!canon) return;
+
+    setCanon((prev) => {
+      if (!prev) return prev;
+
+      // Find entity and mark as confirmed
+      const typeKey = entityType as keyof ProjectCanon;
+      const entities = prev[typeKey] as any[];
+
+      return {
+        ...prev,
+        [typeKey]: entities.map(e =>
+          e.id === entityId
+            ? { ...e, origin: { ...e.origin, confirmed: true, updatedAt: Date.now() } }
+            : e
+        )
+      };
+    });
+
+    console.log(`[Canon] Confirmed ${entityType}/${entityId}`);
+  };
+
+  const handleRejectCanonEntity = (entityId: string, entityType: string) => {
+    if (!canon) return;
+
+    setCanon((prev) => {
+      if (!prev) return prev;
+
+      // Remove entity
+      const typeKey = entityType as keyof ProjectCanon;
+      const entities = prev[typeKey] as any[];
+
+      return {
+        ...prev,
+        [typeKey]: entities.filter(e => e.id !== entityId)
+      };
+    });
+
+    console.log(`[Canon] Rejected ${entityType}/${entityId}`);
+  };
+
+  const handleEditCanonEntity = (entity: CanonBase, entityType: string) => {
+    // TODO (Phase 2.3.1): Implement edit modal
+    console.log(`[Canon] Edit ${entityType}/${entity.id} (not implemented yet)`);
+    alert(`Edit entity: ${entity.name}\n\n(Edit modal coming in Phase 2.3.1)`);
+  };
+
   const ScoreBar = ({ label, score }: { label: string, score: number }) => (
     <div className="space-y-1">
       <div className="flex justify-between text-xs font-medium uppercase tracking-wider text-ink/60">
@@ -995,7 +1142,7 @@ ${mode === NarrativeMode.ARCHITECT ? "Generate a full story architecture with ac
           </div>
 
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={() => setShowMemory(!showMemory)}
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all",
@@ -1004,6 +1151,15 @@ ${mode === NarrativeMode.ARCHITECT ? "Generate a full story architecture with ac
             >
               <History size={16} />
               Memory
+            </button>
+
+            {/* Test Canon Data Button (Phase 2.3 demo) */}
+            <button
+              onClick={loadTestCanon}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all bg-violet-100 text-violet-700 hover:bg-violet-200"
+              title="Load test canon data to see inferred entities queue"
+            >
+              🧪 Test Canon
             </button>
           </div>
         </div>
@@ -1989,7 +2145,7 @@ ${mode === NarrativeMode.ARCHITECT ? "Generate a full story architecture with ac
           </AnimatePresence>
         </div>
 
-        {/* Sidebar - Narrative Memory */}
+        {/* Sidebar - Narrative Memory (Phase 2.3: with Canon Confirmation Queue) */}
         <AnimatePresence>
           {showMemory && (
             <motion.aside
@@ -1997,67 +2153,49 @@ ${mode === NarrativeMode.ARCHITECT ? "Generate a full story architecture with ac
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="w-80 border-l border-ink/5 bg-white overflow-y-auto p-6 shadow-2xl z-40"
+              className="w-80 border-l border-ink/5 shadow-2xl z-40"
             >
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="font-serif text-xl font-bold">Narrative Memory</h2>
-                <div className="flex items-center gap-2">
-                  <button 
-                    onClick={() => {
-                      if (confirm("Are you sure you want to reset the entire story and memory?")) {
-                        setMemory({ characters: [], locations: [], timeline: [], worldRules: [], plotEvents: [] });
-                        setResult(null);
-                        setText("");
-                        setActiveScene(null);
-                        setSceneProgress({});
-                      }
-                    }}
-                    className="text-[9px] font-bold uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors"
-                  >
-                    Reset
-                  </button>
-                  <button onClick={() => setShowMemory(false)} className="text-ink/40 hover:text-ink">
-                    <X size={20} />
-                  </button>
-                </div>
-              </div>
-
-              <CharacterTracker />
-
-              <MemorySection 
-                title="Locations" 
-                icon={MapPin} 
-                items={memory.locations} 
-                onAdd={(v) => addStringMemory('locations', v)}
-                onRemove={(i) => removeFromMemory('locations', i)}
+              <NarrativeMemoryPanel
+                memory={memory}
+                canon={canon}
+                showMemory={showMemory}
+                setShowMemory={setShowMemory}
+                t={{
+                  narrativeMemory: "Narrative Memory",
+                  reset: "Reset",
+                  characterTracker: "Characters",
+                  addCharacter: "Add Character",
+                  cancel: "Cancel",
+                  save: "Save",
+                  characterName: "Character Name",
+                  characterRole: "Role (e.g., Protagonist)",
+                  characterTrait: "Key Trait",
+                  characterGoals: "Goals",
+                  characterRelationships: "Relationships",
+                  characterArc: "Development Arc",
+                  locations: "Locations",
+                  timeline: "Timeline",
+                  worldRules: "World Rules",
+                  plotEvents: "Plot Events",
+                  proTip: "Pro Tip: Memory context is automatically sent to the AI to ensure consistency across your story."
+                }}
+                onResetMemory={() => {
+                  if (confirm("Are you sure you want to reset the entire story and memory?")) {
+                    setMemory({ characters: [], locations: [], timeline: [], worldRules: [], plotEvents: [] });
+                    setResult(null);
+                    setText("");
+                    setActiveScene(null);
+                    setSceneProgress({});
+                  }
+                }}
+                onAddCharacter={addCharacterMemory}
+                onRemoveCharacter={(idx) => removeFromMemory('characters', idx)}
+                onAddStringMemory={addStringMemory}
+                onRemoveStringMemory={removeFromMemory}
+                onConfirmCanonEntity={handleConfirmCanonEntity}
+                onRejectCanonEntity={handleRejectCanonEntity}
+                onEditCanonEntity={handleEditCanonEntity}
               />
-              <MemorySection 
-                title="Timeline" 
-                icon={Clock} 
-                items={memory.timeline} 
-                onAdd={(v) => addStringMemory('timeline', v)}
-                onRemove={(i) => removeFromMemory('timeline', i)}
-              />
-              <MemorySection 
-                title="World Rules" 
-                icon={Zap} 
-                items={memory.worldRules} 
-                onAdd={(v) => addStringMemory('worldRules', v)}
-                onRemove={(i) => removeFromMemory('worldRules', i)}
-              />
-              <MemorySection 
-                title="Plot Events" 
-                icon={History} 
-                items={memory.plotEvents} 
-                onAdd={(v) => addStringMemory('plotEvents', v)}
-                onRemove={(i) => removeFromMemory('plotEvents', i)}
-              />
-
-              <div className="mt-12 p-4 rounded-2xl bg-violet-50 border border-violet-100">
-                <p className="text-xs text-violet-700 leading-relaxed">
-                  <strong>Pro Tip:</strong> Memory context is automatically sent to the AI to ensure consistency across your story.
-                </p>
-              </div>
             </motion.aside>
           )}
         </AnimatePresence>
