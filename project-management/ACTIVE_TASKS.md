@@ -1,7 +1,7 @@
 # Active Tasks
 
 **Last Updated:** 2026-06-01
-**Current Sprint:** Canon System Migration (Phase 1 COMPLETE ✅)
+**Current Sprint:** Canon System Migration (Phase 3 COMPLETE ✅)
 
 ---
 
@@ -9,7 +9,7 @@
 
 **Context:** Міграція WhiteWrite у Canon-Aware архітектуру. Handoff від Claude Design.
 **Started:** 2026-06-01
-**Status:** Phase 2 COMPLETE ✅ | Phase 3 Ready
+**Status:** Phase 3 COMPLETE ✅ | Phase 4 Ready
 
 ### ✅ Phase 1: Foundation (COMPLETE ✅)
 **Date:** 2026-06-01
@@ -45,18 +45,43 @@
 
 **Demo:** http://localhost:3000/canon-test.html
 
-### 🔄 Phase 3: Flip Source (Next - High Risk)
+### ✅ Phase 3: Flip Source (COMPLETE ✅)
+**Date:** 2026-06-01
+**Commit:** `eed0e6b`
 
-### 📋 Phase 3: Flip Source (High Risk)
-- [ ] Створити `useCanonManagement.ts` хук (applyMemorySuggestion → canon)
-- [ ] Перенаправити записи memory → canon → deriveMemory (за флагом canonAware)
-- [ ] Додати де-ризик перевірку `deepEqual(deriveMemory(canon), oldMemory)`
-- Status: Blocked by Phase 2
+- [x] Створити `useCanonManagement.ts` хук (canon-aware memory operations)
+- [x] Перенаправити записи memory → canon → deriveMemory (за флагом canonAware)
+- [x] Додати де-ризик перевірку `deepEqual(deriveMemory(canon), oldMemory)`
+- [x] Створити phase3.test.ts (5 тестів ✅ PASS)
+- [x] Створити validateMigration.ts (✅ SAFE)
+- [x] Створити integration-example.tsx (reference implementation)
 
-### 📋 Phase 4: Derived Features
+**Key Deliverables:**
+- ✅ `useCanonManagement.ts`: addCharacterToCanon, addLocationToCanon, addEventToCanon, addRuleToCanon
+- ✅ Auto-derives memory after canon writes
+- ✅ Fallback to direct memory write (canonAware=false)
+- ✅ De-risk validation passed
+
+**Test Results:**
+```
+Phase 3 Tests: 5/5 ✅
+- addCharacterToCanon creates explicit entity + derives memory
+- addLocationToCanon creates explicit entity + derives memory
+- Multiple entities → derived memory contains all confirmed
+- Inferred (unconfirmed) entities do NOT appear in derived memory
+- Removing entity from canon updates derived memory
+
+Migration Validation: ✅ SAFE
+- deriveMemory(canon) === memory (deepEqual check passed)
+```
+
+### 📋 Phase 4: Derived Features (Next - Ready)
+- [ ] Інтегрувати useCanonManagement в AppRoot.tsx
 - [ ] Додати SceneIntent + canon-лінки до ArchitectScene
 - [ ] Імплементувати storyMap як похідний від canon-графа (замість AI generation)
-- Status: Blocked by Phase 3
+- [ ] Enable canonAware flag for test project
+- [ ] Verify AI context generation with derived memory
+- Status: Ready to start
 
 ---
 

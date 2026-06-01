@@ -4,6 +4,106 @@
 
 ---
 
+## 📅 Session 10: Canon System Phase 3 (Flip Source) ✅
+**Date:** 2026-06-01
+**Duration:** ~2.5 години
+**AI Agent:** Claude Code (Sonnet 4.5)
+**Human:** Aizekhan
+
+### What We Did
+- [x] **Проаналізував memory write paths** (addCharacterMemory, addStringMemory в App.tsx)
+- [x] **Створив useCanonManagement.ts хук** (canon-aware memory operations)
+  - addCharacterToCanon, addLocationToCanon, addEventToCanon, addRuleToCanon, addTimelineToCanon
+  - Auto-derives NarrativeMemory після кожного запису
+  - Fallback на direct memory write (canonAware=false)
+- [x] **Створив phase3.test.ts** (5 tests, ✅ ALL PASS)
+- [x] **Створив validateMigration.ts** (де-ризик validation tool, ✅ SAFE)
+- [x] **Створив integration-example.tsx** (reference implementation для AppRoot)
+- [x] **Синхронізував canonTypes.ts schema** з deriveMemory.ts
+
+### 🎉 WHAT GAVE WOW EFFECT
+- **5 tests пройшли з першого разу** — canon → deriveMemory → memory flow працює
+- **Migration validation ✅ SAFE** — deepEqual перевірка підтвердила, що deriveMemory(canon) === memory
+- **Fallback behavior** — canonAware=false preserves old flow (no breaking changes)
+- **Phase 3 завершена за 2.5 години** — add Character/Location/Event/Rule працюють
+
+### ⚠️ WHAT WAS TIME WASTE
+- **Schema mismatch** між useCanonManagement і canonTypes.ts (40 хв на виправлення)
+  - Спочатку створив неправильну структуру CanonCharacter (з emotionalState, physicalState)
+  - Треба було одразу читати canonTypes.ts замість improvise
+- **deepEqual stack overflow** (10 хв) — неправильний порядок перевірок (Array.isArray мав бути перед typeof === 'object')
+
+### 📸 Visual Milestones (Screenshot Commits)
+- Commit `eed0e6b`: Phase 3 complete — useCanonManagement + tests + validation
+
+### Key Decisions Made
+- **useCanonManagement хук** — центральний API для canon operations
+- **Auto-derivation** — кожен запис у canon автоматично викликає deriveMemory()
+- **Fallback preservation** — canonAware=false зберігає поточну поведінку (no migration needed)
+- **De-risk validation** — validateMigration.ts перевіряє безпеку перед флипом
+
+### Code Changes
+**Files Created:**
+- `src/hooks/useCanonManagement.ts` (469 рядків) — canon-aware memory hook
+- `src/canon/phase3.test.ts` (458 рядків) — offline tests (5 scenarios)
+- `src/canon/validateMigration.ts` (391 рядок) — migration safety checker
+- `src/canon/integration-example.tsx` (358 рядків) — integration guide for AppRoot
+
+**Files Modified:**
+- Жодних (Phase 3 = pure addition, no breaking changes)
+
+### Insights
+
+**Technical:**
+- **Canon → deriveMemory → Memory** — єдиний derivation point працює
+- **Explicit entities (confirmed:true)** — immediately authoritative
+- **Inferred entities (confirmed:false)** — не впливають на memory до підтвердження
+- **Fallback behavior** — canonAware=false enables gradual rollout
+
+**Product/UX:**
+- **Migration is safe** — deepEqual validation пройшла, no data loss
+- **Integration is opt-in** — можна включити canonAware per-project
+- **Backward compatible** — існуючі проєкти працюють без змін
+
+**Integration Pattern:**
+```typescript
+const { addCharacterToCanon, addLocationToCanon, ... } = useCanonManagement(
+    activeProject?.canonAware || false
+);
+
+// Replace:
+// setMemory(prev => ({ ...prev, characters: [...prev.characters, char] }))
+
+// With:
+addCharacterToCanon(char); // auto-derives memory
+```
+
+**Red Flags to Avoid:**
+- ⚠️ Не improvise canon schema — завжди читай canonTypes.ts
+- ⚠️ Не забувай type fields (type: 'characters', etc.)
+- ⚠️ Не плутай Character (types.ts) з CanonCharacter (canonTypes.ts)
+
+### Blockers / Issues
+- **Canon UI integration відкладено** — AppRoot.tsx ще не має NarrativeMemoryPanel
+  - integration-example.tsx показує як інтегрувати
+  - Phase 4 task: integrate into AppRoot
+
+### Next Steps
+1. **Phase 4:** Інтегрувати useCanonManagement в AppRoot.tsx
+2. **Phase 4:** Enable canonAware=true для тестового проєкту
+3. **Phase 4:** Verify AI context generation з derived memory
+4. **Phase 4:** SceneIntent + canon-лінки до ArchitectScene
+5. **Phase 4:** storyMap як derived від canon-графа
+
+### Important Notes
+- **Phase 3 COMPLETE ✅** — canon-aware memory operations працюють
+- **Test URL:** npx tsx src/canon/phase3.test.ts (5/5 ✅)
+- **Validation:** npx tsx src/canon/validateMigration.ts (✅ SAFE)
+- **Integration guide:** src/canon/integration-example.tsx
+- **Commit:** `eed0e6b` — "feat: Phase 3 - Canon-Aware Memory Operations (Flip Source)"
+
+---
+
 ## 📅 Session 9: Canon System Phase 2 (Content Population) ✅
 **Date:** 2026-06-01
 **Duration:** ~3 години
