@@ -30,6 +30,7 @@ export enum NarrativeMode {
   IMPROVE = "Improve",
   ADAPT = "Adapt",
   ARCHITECT = "Architect",
+  EXTRACT_CANON = "ExtractCanon",
 }
 
 export enum NarrativeAspect {

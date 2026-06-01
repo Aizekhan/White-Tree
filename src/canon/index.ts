@@ -3,3 +3,4 @@
 
 export * from "./canonTypes";
 export * from "./deriveMemory";
+export * from "./extractCanonPrompt";
