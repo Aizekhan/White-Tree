@@ -3,7 +3,22 @@
     "allow": [
       "Bash(git checkout:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(nul)",
+      "Bash(npm run dev:*)",
+      "Bash(node -e:*)",
+      "Bash(node server.js:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx tsx:*)",
+      "Bash(git push:*)",
+      "Bash(cat:*)",
+      "Bash(curl:*)",
+      "Bash(node scripts/runBackfillTestClient.mjs:*)",
+      "Bash(node scripts/runMockTest.mjs:*)",
+      "Bash(node --loader ts-node/esm:*)",
+      "Bash(node --loader tsx:*)",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []

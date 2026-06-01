@@ -1,6 +1,7 @@
 import { NarrativeMode, NarrativeAspect, NarrativeMemory, NarrativeForm, ArchitectNarrativeMode, NarrativeMedium, Project, AdaptTarget } from "../types";
 import { API_BASE_URL, getAuthToken } from "../config/apiConfig";
 import { EXTRACT_CANON_SYSTEM, EXTRACT_CANON_RESPONSE_PROPERTIES, buildExtractCanonInput } from "../canon/extractCanonPrompt";
+import { EXTRACT_FROM_EDIT_SYSTEM, EXTRACT_FROM_EDIT_RESPONSE_SCHEMA, buildExtractFromEditInput } from "../canon/extractFromEditPrompt";
 
 
 export interface AIAnalysisParams {
@@ -724,6 +725,11 @@ export const generateNarrativeContent = async (params: AIAnalysisParams) => {
         modeInstruction = EXTRACT_CANON_SYSTEM;
         responseProperties = EXTRACT_CANON_RESPONSE_PROPERTIES;
         requiredFields = ["canon"];
+    } else if (mode === NarrativeMode.EXTRACT_FROM_EDIT) {
+        // Extract from edit mode: edited text → new entities + conflicts
+        modeInstruction = EXTRACT_FROM_EDIT_SYSTEM;
+        responseProperties = EXTRACT_FROM_EDIT_RESPONSE_SCHEMA;
+        requiredFields = ["newEntities", "conflicts", "suggestions"];
     }
 
     // Helper to normalize the AI response structure (Fallback safety net)
@@ -783,7 +789,7 @@ export const generateNarrativeContent = async (params: AIAnalysisParams) => {
 
     let filteredMemory = { ...memory };
 
-    if (activeScene && mode !== NarrativeMode.ARCHITECT && mode !== NarrativeMode.EXTRACT_CANON) {
+    if (activeScene && mode !== NarrativeMode.ARCHITECT && mode !== NarrativeMode.EXTRACT_CANON && mode !== NarrativeMode.EXTRACT_FROM_EDIT) {
         const sceneContextText = `${activeScene.title} ${activeScene.description} ${activeScene.goals.join(" ")} ${activeScene.conflicts.join(" ")} `.toLowerCase();
 
         filteredMemory.characters = memory.characters.filter(c =>
@@ -824,7 +830,7 @@ export const generateNarrativeContent = async (params: AIAnalysisParams) => {
         - World Rules: ${filteredMemory.worldRules.join(", ") || "None"}
         - Plot Events: ${filteredMemory.plotEvents.join(", ") || "None"}
     
-    ${activeScene && mode !== NarrativeMode.ARCHITECT && mode !== NarrativeMode.EXTRACT_CANON ? `
+    ${activeScene && mode !== NarrativeMode.ARCHITECT && mode !== NarrativeMode.EXTRACT_CANON && mode !== NarrativeMode.EXTRACT_FROM_EDIT ? `
     Current Scene Context:
     Act: ${activeScene.act}
     Chapter: ${activeScene.chapter}
@@ -858,12 +864,19 @@ export const generateNarrativeContent = async (params: AIAnalysisParams) => {
     Return the response as a valid JSON object ONLY. No markdown wrapping.
   `;
 
-    // EXTRACT_CANON uses a special prompt builder
+    // EXTRACT_CANON and EXTRACT_FROM_EDIT use special prompt builders
     const prompt = mode === NarrativeMode.EXTRACT_CANON
         ? buildExtractCanonInput({
             memory,
             architecture: activeProject?.architecture,
             text
+          })
+        : mode === NarrativeMode.EXTRACT_FROM_EDIT && activeProject?.canon
+        ? buildExtractFromEditInput({
+            text,
+            sceneId: activeScene?.id || 'unknown',
+            existingCanon: activeProject.canon,
+            language: 'UA'
           })
         : `
 ${mode === NarrativeMode.ARCHITECT ? `

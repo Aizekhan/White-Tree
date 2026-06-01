@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canon Backfill Test</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 { color: #ffaa00; }
+        .pass { color: #00ff00; }
+        .fail { color: #ff0000; }
+        .warn { color: #ffaa00; }
+        #log {
+            background: #1a1a1a;
+            padding: 20px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            margin-top: 20px;
+        }
+        button {
+            background: #ffaa00;
+            color: #0a0a0a;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #ff8800;
+        }
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Canon System Backfill Test (Phase 2.4)</h1>
+    <p>Цей тест перевірить що EXTRACT_CANON коректно витягує canon з проєкту.</p>
+
+    <div>
+        <button id="runTest" onclick="runTest()">▶️ Запустити тест</button>
+        <button onclick="location.reload()">🔄 Перезапустити</button>
+    </div>
+
+    <div id="log"></div>
+
+    <script type="module">
+        const log = document.getElementById('log');
+        const btn = document.getElementById('runTest');
+
+        function print(msg, color = null) {
+            const span = document.createElement('span');
+            if (color) span.className = color;
+            span.textContent = msg + '\n';
+            log.appendChild(span);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        window.runTest = async function() {
+            btn.disabled = true;
+            log.innerHTML = '';
+
+            print('🧪 ========== BACKFILL INTEGRATION TEST ==========', 'warn');
+            print('⏰ Started at: ' + new Date().toISOString() + '\n');
+
+            try {
+                // Import modules
+                print('📦 Loading modules...');
+                const { runBackfillTest } = await import('./src/canon/testBackfill.js');
+                const { db } = await import('./src/firebase.js');
+                const { collection, getDocs, limit, query } = await import('firebase/firestore');
+
+                print('✅ Modules loaded\n');
+
+                // Get first project
+                print('📖 Looking for projects in Firestore...');
+                const projectsRef = collection(db, 'projects');
+                const q = query(projectsRef, limit(1));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    print('❌ No projects found! Create a project first.', 'fail');
+                    btn.disabled = false;
+                    return;
+                }
+
+                const projectId = snapshot.docs[0].id;
+                const projectData = snapshot.docs[0].data();
+                print(`✅ Found project: "${projectData.title}" (ID: ${projectId})\n`, 'pass');
+
+                // Run test
+                print('🤖 Running backfillProjectCanon()...\n');
+                print('━'.repeat(50) + '\n');
+
+                const result = await runBackfillTest(projectId);
+
+                print('\n' + '━'.repeat(50) + '\n');
+
+                // Display result
+                if (result.passed) {
+                    print('🎉 ALL TESTS PASSED\n', 'pass');
+                    print('✅ Extraction works correctly');
+                    print('✅ Canon data structure is valid');
+                    print('✅ Migration is safe (no auto-confirm)');
+                    print('\n➡️  NEXT STEP: Build UI for confirmation queue (Phase 2.3)');
+                } else {
+                    print('⚠️  SOME TESTS FAILED\n', 'fail');
+                    result.tests.forEach((t, i) => {
+                        print(`${i+1}. ${t.passed ? '✅' : '❌'} ${t.name}`, t.passed ? 'pass' : 'fail');
+                        if (!t.passed) print(`   → ${t.message}`, 'warn');
+                    });
+                }
+
+                print('\n' + '='.repeat(50));
+                print(`📊 Stats: ${JSON.stringify(result.stats, null, 2)}`);
+
+            } catch (error) {
+                print('\n❌ Fatal error: ' + error.message, 'fail');
+                console.error('Full error:', error);
+            }
+
+            btn.disabled = false;
+        };
+
+        // Auto-run on load
+        print('💡 Натисніть "Запустити тест" щоб почати\n', 'warn');
+        print('⚠️  Переконайтесь що ви авторизовані в додатку!\n');
+    </script>
+</body>
+</html>

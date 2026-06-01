@@ -3,15 +3,17 @@ import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth } from './firebase';
 import { useProjectState } from './hooks/useProjectState';
 import Login from './features/auth/components/Login';
+import MagicalBookEntry from './features/entry/MagicalBookEntry';
 import ProjectList from './features/projects/components/ProjectList';
 import ImmersiveStoryEntry from './features/universe/ImmersiveStoryEntry';
 import ContextualWritingWorkspace from './features/universe/ContextualWritingWorkspace';
 import { createProject } from './services/projectService';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
-import type { Project } from './types';
+import type { Project, NarrativeMode, NarrativeAspect, NarrativeForm, ArchitectNarrativeMode, NarrativeMedium } from './types';
 import { architectureToScenes, type ImmersiveScene } from './adapters/architectureToScenes';
-import { Library, Plus, LogOut } from 'lucide-react';
+import { Library, Plus, LogOut, Loader2, X } from 'lucide-react';
+import { generateNarrativeContent } from './services/AIEngine';
 
 // Translations (simple inline for now - can extract later)
 const translations = {
@@ -75,6 +77,14 @@ export default function AppRoot() {
   const [language, setLanguage] = useState<'UA' | 'ENG'>('UA');
   const [showLibrary, setShowLibrary] = useState(false);
   const [activeWritingScene, setActiveWritingScene] = useState<ImmersiveScene | null>(null);
+  const [showArchitectModal, setShowArchitectModal] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [premise, setPremise] = useState('');
+  const [localArchitecture, setLocalArchitecture] = useState<any>(null);
+
+  // Magical book entry states
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [universePromptFromBook, setUniversePromptFromBook] = useState<string | null>(null);
 
   const t = translations[language];
 
@@ -99,6 +109,18 @@ export default function AppRoot() {
 
   // Load project state hook (only when authenticated)
   const projectState = useProjectState(user);
+
+  // Use local architecture if available (immediately after generation), otherwise use Firestore data
+  const currentArchitecture = localArchitecture || projectState.activeProject?.architecture;
+
+  // Sync localArchitecture when project changes
+  useEffect(() => {
+    if (projectState.activeProject?.architecture) {
+      setLocalArchitecture(projectState.activeProject.architecture);
+    } else {
+      setLocalArchitecture(null);
+    }
+  }, [projectState.activeProjectId]);
 
   // Auto-select first project on login (Universe Ignition)
   useEffect(() => {
@@ -164,6 +186,93 @@ export default function AppRoot() {
     }
   };
 
+  const handleGenerateArchitecture = async () => {
+    if (!premise.trim() || !projectState.activeProject) return;
+
+    setIsGenerating(true);
+    try {
+      console.log('[ARCHITECT] Generating architecture for:', premise);
+
+      const result = await generateNarrativeContent({
+        text: premise,
+        mode: 'ARCHITECT' as NarrativeMode,
+        aspect: 'PLOT_STRUCTURE' as NarrativeAspect,
+        memory: {
+          characters: [],
+          locations: [],
+          timeline: [],
+          worldRules: [],
+          plotEvents: []
+        },
+        activeProject: projectState.activeProject,
+        narrativeForm: 'PROSE' as NarrativeForm,
+        architectNarrativeMode: 'SCENE_BASED' as ArchitectNarrativeMode,
+        narrativeMedium: 'NOVEL' as NarrativeMedium
+      });
+
+      console.log('[ARCHITECT] Architecture generated:', result);
+
+      if (result.architecture) {
+        console.log('[ARCHITECT] Architecture structure:', {
+          title: result.architecture.title,
+          acts: Object.keys(result.architecture.acts || {})
+        });
+
+        // Save architecture to Firestore
+        await updateDoc(doc(db, 'projects', projectState.activeProject.id), {
+          architecture: result.architecture,
+          updatedAt: new Date().toISOString()
+        });
+
+        console.log('[ARCHITECT] Architecture saved to Firestore');
+
+        // Update local state immediately (don't wait for Firestore snapshot)
+        setLocalArchitecture(result.architecture);
+        projectState.setArchitecture(result.architecture);
+
+        console.log('[ARCHITECT] Local state updated - scenes should appear now');
+
+        setShowArchitectModal(false);
+        setPremise('');
+      } else {
+        console.error('[ARCHITECT] No architecture in result:', result);
+        throw new Error('AI did not return architecture');
+      }
+    } catch (error) {
+      console.error('[ARCHITECT] Failed to generate architecture:', error);
+      alert(language === 'UA'
+        ? 'Помилка створення структури. Спробуйте ще раз.'
+        : 'Failed to generate architecture. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // Magical book handlers
+  const handleEnterUniverseFromBook = (prompt: string) => {
+    console.log('[MAGICAL_BOOK] User wants to enter universe:', prompt);
+    setUniversePromptFromBook(prompt);
+    setShowLoginModal(true);
+  };
+
+  // When user successfully authenticates, create project with saved universe prompt
+  useEffect(() => {
+    if (user && universePromptFromBook) {
+      console.log('[MAGICAL_BOOK] User authenticated, creating universe with prompt:', universePromptFromBook);
+
+      // Create project with universe prompt as description
+      handleCreateProject(
+        universePromptFromBook.slice(0, 50) + (universePromptFromBook.length > 50 ? '...' : ''),
+        universePromptFromBook,
+        language
+      );
+
+      // Clear the stored prompt
+      setUniversePromptFromBook(null);
+      setShowLoginModal(false);
+    }
+  }, [user, universePromptFromBook]);
+
   // Loading state
   if (authLoading) {
     return (
@@ -173,12 +282,35 @@ export default function AppRoot() {
     );
   }
 
-  // Not authenticated - show login
+  // Not authenticated - show magical book entry
   if (!user) {
     try {
-      return <Login t={t} />;
+      return (
+        <>
+          <MagicalBookEntry
+            onEnterUniverse={handleEnterUniverseFromBook}
+            onLogin={() => setShowLoginModal(true)}
+            onSignup={() => setShowLoginModal(true)}
+          />
+
+          {/* Login/Signup Modal Overlay */}
+          {showLoginModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md">
+              <div className="relative max-w-md w-full mx-4">
+                <button
+                  onClick={() => setShowLoginModal(false)}
+                  className="absolute -top-12 right-0 p-2 text-amber-300/60 hover:text-amber-300 transition-all"
+                >
+                  <X size={24} />
+                </button>
+                <Login t={t} />
+              </div>
+            </div>
+          )}
+        </>
+      );
     } catch (error) {
-      console.error('[APPROOT] Error rendering Login:', error);
+      console.error('[APPROOT] Error rendering MagicalBookEntry:', error);
       return (
         <div className="min-h-screen bg-black text-white flex items-center justify-center">
           <div className="text-center">
@@ -294,12 +426,12 @@ export default function AppRoot() {
           saveStatus={projectState.saveStatus}
           onBack={() => setActiveWritingScene(null)}
         />
-      ) : projectState.activeProject && projectState.activeProject.architecture ? (
+      ) : projectState.activeProject && currentArchitecture ? (
         // Scene Navigation - immersive story entry
         <ImmersiveStoryEntry
           projectTitle={projectState.activeProject.title}
           projectDescription={projectState.activeProject.description}
-          scenes={architectureToScenes(projectState.activeProject.architecture)}
+          scenes={architectureToScenes(currentArchitecture)}
           onEnterScene={(scene) => {
             console.log('[UNIVERSE] Entering scene:', scene.title);
             setActiveWritingScene(scene);
@@ -328,7 +460,10 @@ export default function AppRoot() {
             </p>
 
             <div className="flex gap-4 justify-center">
-              <button className="px-8 py-4 bg-gradient-to-r from-violet-600 to-blue-600 text-white rounded-2xl hover:from-violet-700 hover:to-blue-700 transition-all text-lg font-bold shadow-xl shadow-violet-900/50">
+              <button
+                onClick={() => setShowArchitectModal(true)}
+                className="px-8 py-4 bg-gradient-to-r from-violet-600 to-blue-600 text-white rounded-2xl hover:from-violet-700 hover:to-blue-700 transition-all text-lg font-bold shadow-xl shadow-violet-900/50"
+              >
                 {language === 'UA' ? '🎬 Створити Структуру' : '🎬 Build Structure'}
               </button>
 
@@ -345,6 +480,75 @@ export default function AppRoot() {
                 <Plus size={16} />
                 {language === 'UA' ? 'або створіть новий всесвіт' : 'or create a new universe'}
               </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ARCHITECT Modal */}
+      {showArchitectModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl border border-white/10 p-8 max-w-2xl w-full mx-4 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-serif font-bold text-white">
+                {language === 'UA' ? '🎬 Створити Структуру Історії' : '🎬 Build Story Architecture'}
+              </h2>
+              <button
+                onClick={() => setShowArchitectModal(false)}
+                className="p-2 rounded-full hover:bg-white/10 transition-all"
+              >
+                <X size={24} className="text-white/60" />
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm text-white/60 mb-2">
+                {language === 'UA' ? 'Опишіть вашу історію (ідея, конфлікт, персонажі):' : 'Describe your story (idea, conflict, characters):'}
+              </label>
+              <textarea
+                value={premise}
+                onChange={(e) => setPremise(e.target.value)}
+                placeholder={language === 'UA'
+                  ? 'Наприклад: "Самотня астрофізик на віддаленій орбітальній станції виявляє дивний сигнал із глибокого космосу..."'
+                  : 'Example: "A lone astrophysicist on a remote orbital station detects a strange signal from deep space..."'}
+                className="w-full h-32 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-violet-500/50 resize-none"
+              />
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowArchitectModal(false)}
+                disabled={isGenerating}
+                className="px-6 py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-all disabled:opacity-50"
+              >
+                {language === 'UA' ? 'Скасувати' : 'Cancel'}
+              </button>
+              <button
+                onClick={handleGenerateArchitecture}
+                disabled={isGenerating || !premise.trim()}
+                className="px-8 py-3 bg-gradient-to-r from-violet-600 to-blue-600 text-white rounded-xl hover:from-violet-700 hover:to-blue-700 transition-all font-bold shadow-xl shadow-violet-900/50 disabled:opacity-50 flex items-center gap-2"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin" />
+                    {language === 'UA' ? 'Генерується...' : 'Generating...'}
+                  </>
+                ) : (
+                  <>
+                    {language === 'UA' ? '✨ Створити' : '✨ Generate'}
+                  </>
+                )}
+              </button>
+            </div>
+
+            {isGenerating && (
+              <div className="mt-6 p-4 bg-violet-900/20 border border-violet-500/20 rounded-xl">
+                <p className="text-sm text-white/60 text-center">
+                  {language === 'UA'
+                    ? 'AI створює структуру вашої історії (Acts, Chapters, Scenes)...'
+                    : 'AI is building your story structure (Acts, Chapters, Scenes)...'}
+                </p>
+              </div>
             )}
           </div>
         </div>

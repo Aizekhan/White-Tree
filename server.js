@@ -9,8 +9,10 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
 
-// Initialize Gemini
-const genAI = new GoogleGenAI(process.env.VITE_GEMINI_API_KEY || '');
+// Get API key
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || '';
+
+console.log('[SERVER] Gemini API Key configured:', GEMINI_API_KEY ? 'YES ✓' : 'NO ✗');
 
 app.use(cors());
 app.use(express.json());
@@ -24,8 +26,22 @@ app.post('/api/ai/generate', async (req, res) => {
             return res.status(400).json({ error: 'Prompt is required' });
         }
 
-        const model = genAI.getGenerativeModel({
+        if (!GEMINI_API_KEY) {
+            return res.status(500).json({ error: 'Gemini API key not configured' });
+        }
+
+        const genAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+
+        const result = await genAI.models.generateContent({
             model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+            contents: [{
+                role: 'user',
+                parts: [{ text: prompt }]
+            }],
+            systemInstruction: systemInstruction ? {
+                role: 'system',
+                parts: [{ text: systemInstruction }]
+            } : undefined,
             generationConfig: {
                 responseMimeType: "application/json",
                 responseSchema: {
@@ -33,12 +49,26 @@ app.post('/api/ai/generate', async (req, res) => {
                     properties: responseProperties,
                     required: requiredFields
                 }
-            },
-            systemInstruction: systemInstruction
+            }
         });
 
-        const result = await model.generateContent(prompt);
-        const responseText = result.response.text();
+        console.log('[DEBUG] Result keys:', Object.keys(result));
+        console.log('[DEBUG] Result.text exists?', typeof result.text);
+
+        // Try different ways to access the response
+        let responseText;
+        if (result.text) {
+            responseText = result.text;
+        } else if (result.response && typeof result.response.text === 'function') {
+            responseText = result.response.text();
+        } else if (result.candidates && result.candidates[0]) {
+            responseText = result.candidates[0].content.parts[0].text;
+        } else {
+            console.error('[DEBUG] Full result:', JSON.stringify(result, null, 2).slice(0, 1000));
+            throw new Error('Could not extract text from Gemini response');
+        }
+
+        console.log('[DEBUG] Response text (first 200 chars):', responseText.slice(0, 200));
 
         try {
             const jsonResponse = JSON.parse(responseText);
@@ -58,13 +88,25 @@ app.post('/api/ai/resync', async (req, res) => {
     try {
         const { systemInstruction, prompt } = req.body;
 
-        const model = genAI.getGenerativeModel({
+        if (!GEMINI_API_KEY) {
+            return res.status(500).json({ error: 'Gemini API key not configured' });
+        }
+
+        const genAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+
+        const result = await genAI.models.generateContent({
             model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
-            systemInstruction: systemInstruction
+            contents: [{
+                role: 'user',
+                parts: [{ text: prompt }]
+            }],
+            systemInstruction: systemInstruction ? {
+                role: 'system',
+                parts: [{ text: systemInstruction }]
+            } : undefined
         });
 
-        const result = await model.generateContent(prompt);
-        const responseText = result.response.text();
+        const responseText = result.text;
 
         res.json({ text: responseText });
     } catch (error) {
