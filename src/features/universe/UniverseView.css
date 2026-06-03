@@ -961,3 +961,172 @@
   height: 17px;
   color: var(--gold-lit);
 }
+
+/* ========================================
+   Relations Editor
+   ======================================== */
+
+.relations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.relation-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.relation-item:hover {
+  background: var(--bg-2);
+  border-color: rgba(217, 119, 6, 0.3);
+}
+
+.relation-content {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--tx);
+}
+
+.relation-content strong {
+  color: var(--tx-hi);
+  font-weight: 600;
+}
+
+.relation-tone {
+  font-style: italic;
+  opacity: 0.75;
+}
+
+.relation-delete {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--tx-mid);
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.relation-delete:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.relation-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--bg-3);
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tx-mid);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.relation-add-btn:hover {
+  background: var(--bg-2);
+  border-color: rgba(217, 119, 6, 0.4);
+  color: var(--gold-lit);
+}
+
+.relation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.relation-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.relation-input {
+  padding: 7px 10px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--tx);
+  transition: all 0.15s;
+}
+
+.relation-input:focus {
+  outline: none;
+  border-color: rgba(217, 119, 6, 0.5);
+  background: var(--bg-1);
+}
+
+.relation-input::placeholder {
+  color: var(--tx-dim);
+  opacity: 0.6;
+}
+
+.relation-form__actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.relation-btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.relation-btn--save {
+  background: var(--bg-2);
+  color: var(--gold-lit);
+}
+
+.relation-btn--save:hover:not(:disabled) {
+  background: var(--gold-soft);
+  border-color: rgba(217, 119, 6, 0.5);
+}
+
+.relation-btn--save:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.relation-btn--cancel {
+  background: var(--bg-2);
+  color: var(--tx-mid);
+}
+
+.relation-btn--cancel:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}

@@ -15,6 +15,7 @@ import type {
 } from '../../canon/canonTypes';
 import type { UniverseCategory } from './UniverseView';
 import EditableField from './EditableField';
+import RelationsEditor from './RelationsEditor';
 
 interface EntityProfileProps {
   entity: CanonEntityDisplay;
@@ -39,6 +40,10 @@ function CharacterProfile({
 }) {
   const handleFieldSave = (field: keyof CanonCharacter, value: string) => {
     onSave({ [field]: value });
+  };
+
+  const handleRelationsSave = (newRelations: Array<{ kind: string; tone?: string; targetId?: string }>) => {
+    onSave({ relations: newRelations });
   };
 
   return (
@@ -111,24 +116,6 @@ function CharacterProfile({
           />
         </div>
 
-        {/* Relations */}
-        {entity.relations && entity.relations.length > 0 && (
-          <div className="dblk">
-            <div className="blk-h">
-              <Heart />
-              Зв'язки
-            </div>
-            <div className="dprose">
-              {entity.relations.map((rel, i) => (
-                <div key={i} style={{ marginTop: i > 0 ? '8px' : 0 }}>
-                  <strong>{rel.kind}</strong>
-                  {rel.tone && ` (${rel.tone})`}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Status */}
         <div className="dblk">
           <div className="blk-h">
@@ -143,23 +130,12 @@ function CharacterProfile({
           />
         </div>
 
-        {/* Relations - TODO: Add relations editor in future */}
-        {entity.relations && entity.relations.length > 0 && (
-          <div className="dblk">
-            <div className="blk-h">
-              <Heart />
-              Зв'язки
-            </div>
-            <div className="dprose">
-              {entity.relations.map((rel, i) => (
-                <div key={i} style={{ marginTop: i > 0 ? '8px' : 0 }}>
-                  <strong>{rel.kind}</strong>
-                  {rel.tone && ` (${rel.tone})`}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Relations */}
+        <RelationsEditor
+          relations={entity.relations || []}
+          onSave={handleRelationsSave}
+          editMode={editMode}
+        />
       </div>
     </div>
   );
