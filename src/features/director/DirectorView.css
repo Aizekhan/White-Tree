@@ -75,6 +75,18 @@
   color: var(--gold-lit);
 }
 
+.director__tab--demo {
+  margin-left: auto;
+  background: rgba(124, 58, 237, 0.1);
+  border-color: var(--violet-1);
+  color: var(--violet-1);
+}
+
+.director__tab--demo:hover {
+  background: rgba(124, 58, 237, 0.2);
+  border-color: var(--violet-2);
+}
+
 .director__content {
   flex: 1;
   overflow: hidden;
