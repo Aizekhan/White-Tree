@@ -8,6 +8,7 @@
 
 import { useState, useEffect, useMemo, type ReactNode } from 'react';
 import { ArrowLeft, User, MapPin, Calendar, Users, Package, Search, ChevronDown, ArrowUpDown } from 'lucide-react';
+import { useStoryStore } from '../../store/useStoryStore';
 
 type SortOption = 'alphabetical' | 'confirmed-first' | 'inferred-first';
 import type { UniverseCategory } from './UniverseView';
@@ -119,7 +120,8 @@ export default function UniverseWorkspace({
   const Icon = info.icon;
   const CardIcon = getEntityIcon(category);
 
-  const { getEntities, getCount, hasCanon } = useUniverseCanon();
+  const { getEntities, getCount, hasCanon, canon } = useUniverseCanon();
+  const { setCanon } = useStoryStore();
 
   // Selection state
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
@@ -130,10 +132,14 @@ export default function UniverseWorkspace({
   const [sortOption, setSortOption] = useState<SortOption>('alphabetical');
   const [showSortMenu, setShowSortMenu] = useState(false);
 
-  // Clear selection and search when category changes
+  // Edit mode state
+  const [editMode, setEditMode] = useState(false);
+
+  // Clear selection, search, and exit edit mode when category changes
   useEffect(() => {
     setSelectedEntityId(null);
     setSearchQuery('');
+    setEditMode(false);
   }, [category]);
 
   // Close category dropdown on outside click
@@ -219,6 +225,57 @@ export default function UniverseWorkspace({
   // Handle entity click
   const handleEntityClick = (entityId: string) => {
     setSelectedEntityId(entityId);
+    setEditMode(false); // Exit edit mode when selecting new entity
+  };
+
+  // Handle edit mode toggle
+  const handleToggleEdit = () => {
+    setEditMode((prev) => !prev);
+  };
+
+  // Handle entity save
+  const handleSaveEntity = (entityId: string, updates: Partial<CanonEntityDisplay>) => {
+    if (!canon) return;
+
+    // Update canon entity
+    setCanon((prevCanon) => {
+      if (!prevCanon) return prevCanon;
+
+      // Find and update entity in correct collection
+      const updatedCanon = { ...prevCanon };
+
+      switch (category) {
+        case 'characters':
+          updatedCanon.characters = prevCanon.characters.map((e) =>
+            e.id === entityId ? { ...e, ...updates } : e
+          );
+          break;
+        case 'locations':
+          updatedCanon.locations = prevCanon.locations.map((e) =>
+            e.id === entityId ? { ...e, ...updates } : e
+          );
+          break;
+        case 'events':
+          updatedCanon.events = prevCanon.events.map((e) =>
+            e.id === entityId ? { ...e, ...updates } : e
+          );
+          break;
+        case 'factions':
+          updatedCanon.factions = prevCanon.factions.map((e) =>
+            e.id === entityId ? { ...e, ...updates } : e
+          );
+          break;
+        case 'artifacts':
+          updatedCanon.artifacts = prevCanon.artifacts.map((e) =>
+            e.id === entityId ? { ...e, ...updates } : e
+          );
+          break;
+      }
+
+      return updatedCanon;
+    });
+
+    console.log('[Universe] Entity updated:', entityId, updates);
   };
 
   return (
@@ -411,7 +468,13 @@ export default function UniverseWorkspace({
         {/* Aside (Profile) */}
         <div className="ws-aside">
           {selectedEntity ? (
-            <EntityProfile entity={selectedEntity} category={category} />
+            <EntityProfile
+              entity={selectedEntity}
+              category={category}
+              editMode={editMode}
+              onToggleEdit={handleToggleEdit}
+              onSave={handleSaveEntity}
+            />
           ) : (
             <div className="profile profile--empty">
               Оберіть сутність для перегляду деталей

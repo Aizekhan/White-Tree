@@ -3,7 +3,8 @@
  * Відображається в правому aside панелі
  */
 
-import { Target, Heart, Zap, Users as UsersIcon, MapPin, Calendar, Package } from 'lucide-react';
+import { useState } from 'react';
+import { Target, Heart, Zap, Users as UsersIcon, MapPin, Calendar, Package, Edit3, Save, X } from 'lucide-react';
 import type { CanonEntityDisplay } from './useUniverseCanon';
 import type {
   CanonCharacter,
@@ -13,17 +14,33 @@ import type {
   CanonArtifact,
 } from '../../canon/canonTypes';
 import type { UniverseCategory } from './UniverseView';
+import EditableField from './EditableField';
 
 interface EntityProfileProps {
   entity: CanonEntityDisplay;
   category: UniverseCategory;
+  editMode: boolean;
+  onToggleEdit: () => void;
+  onSave: (entityId: string, updates: Partial<CanonEntityDisplay>) => void;
   onClose?: () => void;
 }
 
 /**
  * Character profile
  */
-function CharacterProfile({ entity }: { entity: CanonCharacter }) {
+function CharacterProfile({
+  entity,
+  editMode,
+  onSave,
+}: {
+  entity: CanonCharacter;
+  editMode: boolean;
+  onSave: (updates: Partial<CanonCharacter>) => void;
+}) {
+  const handleFieldSave = (field: keyof CanonCharacter, value: string) => {
+    onSave({ [field]: value });
+  };
+
   return (
     <div className="profile">
       <div className="profile__hero">
@@ -37,48 +54,62 @@ function CharacterProfile({ entity }: { entity: CanonCharacter }) {
 
       <div className="profile__body">
         {/* Role */}
-        {entity.role && (
-          <div className="dblk">
-            <div className="blk-h">
-              <UsersIcon />
-              Роль
-            </div>
-            <div className="dprose">{entity.role}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <UsersIcon />
+            Роль
           </div>
-        )}
+          <EditableField
+            value={entity.role || ''}
+            onSave={(v) => handleFieldSave('role', v)}
+            placeholder="Додати роль..."
+            editMode={editMode}
+          />
+        </div>
 
         {/* Trait */}
-        {entity.trait && (
-          <div className="dblk">
-            <div className="blk-h">
-              <Zap />
-              Риса характеру
-            </div>
-            <div className="dprose">{entity.trait}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <Zap />
+            Риса характеру
           </div>
-        )}
+          <EditableField
+            value={entity.trait || ''}
+            onSave={(v) => handleFieldSave('trait', v)}
+            placeholder="Додати рису характеру..."
+            editMode={editMode}
+          />
+        </div>
 
         {/* Goal */}
-        {entity.goal && (
-          <div className="dblk">
-            <div className="blk-h">
-              <Target />
-              Ціль
-            </div>
-            <div className="dprose">{entity.goal}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <Target />
+            Ціль
           </div>
-        )}
+          <EditableField
+            value={entity.goal || ''}
+            onSave={(v) => handleFieldSave('goal', v)}
+            placeholder="Додати ціль..."
+            editMode={editMode}
+            multiline
+          />
+        </div>
 
         {/* Development Arc */}
-        {entity.developmentArc && (
-          <div className="dblk">
-            <div className="blk-h">
-              <Zap />
-              Арка розвитку
-            </div>
-            <div className="dprose">{entity.developmentArc}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <Zap />
+            Арка розвитку
           </div>
-        )}
+          <EditableField
+            value={entity.developmentArc || ''}
+            onSave={(v) => handleFieldSave('developmentArc', v)}
+            placeholder="Додати арку розвитку..."
+            editMode={editMode}
+            multiline
+          />
+        </div>
 
         {/* Relations */}
         {entity.relations && entity.relations.length > 0 && (
@@ -99,13 +130,34 @@ function CharacterProfile({ entity }: { entity: CanonCharacter }) {
         )}
 
         {/* Status */}
-        {entity.status && (
+        <div className="dblk">
+          <div className="blk-h">
+            <Zap />
+            Статус
+          </div>
+          <EditableField
+            value={entity.status || ''}
+            onSave={(v) => handleFieldSave('status', v)}
+            placeholder="Додати статус..."
+            editMode={editMode}
+          />
+        </div>
+
+        {/* Relations - TODO: Add relations editor in future */}
+        {entity.relations && entity.relations.length > 0 && (
           <div className="dblk">
             <div className="blk-h">
-              <Zap />
-              Статус
+              <Heart />
+              Зв'язки
             </div>
-            <div className="dprose">{entity.status}</div>
+            <div className="dprose">
+              {entity.relations.map((rel, i) => (
+                <div key={i} style={{ marginTop: i > 0 ? '8px' : 0 }}>
+                  <strong>{rel.kind}</strong>
+                  {rel.tone && ` (${rel.tone})`}
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -317,25 +369,75 @@ function ArtifactProfile({ entity }: { entity: CanonArtifact }) {
 }
 
 /**
+ * Profile Header with Edit button
+ */
+function ProfileHeader({ editMode, onToggleEdit }: { editMode: boolean; onToggleEdit: () => void }) {
+  return (
+    <div className="profile__edit-bar">
+      <button
+        className={`profile__edit-btn ${editMode ? 'is-active' : ''}`}
+        onClick={onToggleEdit}
+        title={editMode ? 'Вийти з режиму редагування' : 'Редагувати'}
+      >
+        {editMode ? (
+          <>
+            <X size={16} />
+            Закрити
+          </>
+        ) : (
+          <>
+            <Edit3 size={16} />
+            Редагувати
+          </>
+        )}
+      </button>
+    </div>
+  );
+}
+
+/**
  * Main EntityProfile component - router based on category
  */
-export default function EntityProfile({ entity, category }: EntityProfileProps) {
-  switch (category) {
-    case 'characters':
-      return <CharacterProfile entity={entity as CanonCharacter} />;
-    case 'locations':
-      return <LocationProfile entity={entity as CanonLocation} />;
-    case 'events':
-      return <EventProfile entity={entity as CanonEvent} />;
-    case 'factions':
-      return <FactionProfile entity={entity as CanonFaction} />;
-    case 'artifacts':
-      return <ArtifactProfile entity={entity as CanonArtifact} />;
-    default:
-      return (
-        <div className="profile profile--empty">
-          Оберіть сутність для перегляду деталей
-        </div>
-      );
-  }
+export default function EntityProfile({
+  entity,
+  category,
+  editMode,
+  onToggleEdit,
+  onSave,
+}: EntityProfileProps) {
+  const handleSave = (updates: Partial<CanonEntityDisplay>) => {
+    onSave(entity.id, updates);
+  };
+
+  return (
+    <div>
+      <ProfileHeader editMode={editMode} onToggleEdit={onToggleEdit} />
+      {(() => {
+        switch (category) {
+          case 'characters':
+            return (
+              <CharacterProfile
+                entity={entity as CanonCharacter}
+                editMode={editMode}
+                onSave={handleSave}
+              />
+            );
+          case 'locations':
+            return <LocationProfile entity={entity as CanonLocation} />;
+          case 'events':
+            return <EventProfile entity={entity as CanonEvent} />;
+          case 'factions':
+            return <FactionProfile entity={entity as CanonFaction} />;
+          case 'artifacts':
+            return <ArtifactProfile entity={entity as CanonArtifact} />;
+          default:
+            return (
+              <div className="profile profile--empty">
+                Оберіть сутність для перегляду деталей
+              </div>
+            );
+        }
+      })()}
+    </div>
+  );
 }
