@@ -1,7 +1,95 @@
 # Active Tasks
 
-**Last Updated:** 2026-06-01
-**Current Sprint:** Canon System Migration (Phase 3 COMPLETE ✅)
+**Last Updated:** 2026-06-03
+**Current Sprint:** UI Port (Book ✅ COMPLETE | Universe 🔄 IN PROGRESS)
+
+---
+
+## 🎨 UI Port from WhiteWrite Prototype → Production (Session 11)
+
+**Context:** Porting pixel-perfect UI from WhiteWrite prototype handoff to production codebase.
+**Started:** 2026-06-03
+**Status:** Book COMPLETE ✅ | Universe PARTIAL ✅ | Director NOT STARTED
+
+### Strategy
+- Port by screen (не все одразу)
+- Verify кожний екран з прототипом перед next
+- Послідовність: Book → Universe → Director
+
+### ✅ Book Screen (COMPLETE ✅)
+**Date:** 2026-06-03 (Session 11 start)
+**Commits:** `274ed33` (Book complete), `4c5c9d4` (Login fix)
+
+- [x] **Sub-task 1:** Scene Intent "Що далі?" (SceneIntentPage.tsx + .css)
+  - 7 intent directions + custom description
+  - Button active only when valid selection
+  - Integrated into BookReader as scene N+1
+- [x] **Sub-task 2:** SceneEditor + Guardian Dialog
+  - Edit mode with pencil button trigger
+  - Pagination algorithm ready
+  - Guardian proposes new entities with type selection
+  - Conflict detection + integration with EDIT→CANON backend
+  - Coach tip for first-time users
+- [x] **Sub-task 3:** Integration with project.architecture.scenes
+  - useBookScenes hook (flattens acts → chapters → scenes)
+  - Dynamic scene source (real data or fallback to MOCK)
+  - Persistent position via localStorage
+
+**Files Created:**
+- `src/features/book/SceneIntentPage.tsx` + `.css`
+- `src/features/book/SceneEditor.tsx` + `.css`
+- `src/features/book/useBookScenes.ts`
+
+**Files Modified:**
+- `src/types.ts` (extended ArchitectScene)
+- `src/features/book/BookReader.tsx` (dynamic scene source)
+- `src/features/book/BookView.tsx` (edit state management)
+- `src/App.new.tsx` (Login fix)
+
+### 🔄 Universe Screen (PARTIAL ✅)
+**Date:** 2026-06-03 (Session 11 continuation)
+**Commits:** `4727610` (canon integration), `d988651` (entity selection + profile)
+
+**Completed:**
+- [x] WorldTreeStage (tree visualization with 5 clickable nodes)
+- [x] UniverseWorkspace (category workspace with cards grid)
+- [x] UniverseView.css (full styles from WhiteWrite WorldTree.html)
+- [x] **Real Canon Data Integration**
+  - useUniverseCanon hook (getEntities, getEntityById, getCount)
+  - Dynamic card rendering based on entity type
+  - Fallback to MOCK when no canon
+- [x] **Entity Selection + Profile Panel**
+  - EntityProfile.tsx (5 type-specific views)
+  - Character/Location/Event/Faction/Artifact profiles
+  - Active card styling (.is-active)
+  - Clear selection on category change
+
+**Files Created:**
+- `src/features/universe/UniverseView.tsx` (MODIFIED from MVP)
+- `src/features/universe/UniverseView.css`
+- `src/features/universe/WorldTreeStage.tsx`
+- `src/features/universe/UniverseWorkspace.tsx` (MODIFIED with selection)
+- `src/features/universe/useUniverseCanon.ts`
+- `src/features/universe/EntityProfile.tsx`
+
+**Remaining Tasks:**
+- [ ] **Filters** (search, sort, group by type/status/confirmed)
+- [ ] **Graph view** (visualize entity relationships)
+- [ ] **Edit mode** (inline editing of entity properties)
+- [ ] **Category dropdown** (quick switch without going back to tree)
+- [ ] **Reconstruction overlay** (show affected scenes on entity change)
+- [ ] **Relations graph** (D3.js visualization of canon links)
+
+**Status:** Core functionality ✅ COMPLETE | Advanced features ⏳ PENDING
+
+### ⏳ Director Screen (NOT STARTED)
+**Status:** Awaiting Universe completion
+
+**Planned Features:**
+- Storyboarding (scene shot breakdown)
+- Shot editor with dialogue
+- Visual canon (reference images + LoRA thresholds)
+- Camera angles, moods, storyboard prompts
 
 ---
 

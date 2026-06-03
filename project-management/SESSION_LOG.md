@@ -4,6 +4,92 @@
 
 ---
 
+## 📅 Session 11 (Continuation): UI Port — Universe (WorldTree) Real Data Integration 🔄
+**Date:** 2026-06-03
+**Duration:** ~1 година (continuation session)
+**AI Agent:** Claude Code (Sonnet 4.5)
+**Human:** Aizekhan
+
+### What We Did
+- [x] **Universe Canon Integration** — Real data from project.canon
+  - Created useUniverseCanon.ts hook (getEntities, getEntityById, getCount)
+  - Updated UniverseWorkspace to use real canon entities
+  - Supports all 5 categories: characters/locations/events/factions/artifacts
+  - Fallback to MOCK data when no canon exists
+  - Dynamic card rendering based on entity type
+- [x] **Entity Selection + Profile Panel**
+  - Created EntityProfile.tsx with type-specific views
+  - Character profile: role, trait, goal, developmentArc, relations, status
+  - Location profile: description, atmosphere
+  - Event profile: when, act, description
+  - Faction profile: motto, alignment, description
+  - Artifact profile: rarity, owner, description
+  - Entity selection state with active card styling (.is-active)
+  - Clear selection on category change (useEffect)
+
+### 🎉 WHAT GAVE WOW EFFECT
+- **Universe fully canon-aware** — no more hardcoded MOCK data (except fallback)
+- **Profile panel works for all 5 entity types** — dynamic rendering based on category
+- **Active card styling** — golden border on selected entity (cinematic feel)
+- **Type-safe entity display** — CanonEntityDisplay with proper type narrowing
+- **Zero breaking changes** — fallback to MOCK when canon doesn't exist
+
+### ⚠️ WHAT WAS TIME WASTE
+- Жодних часових втрат — integration була прямолінійна
+- Всі стилі вже були готові з прототипу (WhiteWrite WorldTree.html)
+
+### 📸 Visual Milestones (Screenshot Commits)
+- Commit `4727610`: Universe — Real canon data integration (useUniverseCanon hook)
+- Commit `d988651`: Universe — Entity selection + Profile panel (5 entity types)
+
+### Key Decisions Made
+- **useUniverseCanon hook pattern** — аналогічно до useBookScenes (flattened access)
+- **Profile as router component** — EntityProfile renders type-specific subcomponent
+- **Fallback strategy** — hasCanon && entities.length > 0 ? real : MOCK
+- **Selection cleared on category change** — useEffect([category], ...)
+
+### Code Changes
+**Files Created:**
+- `src/features/universe/useUniverseCanon.ts` (114 lines) — canon access hook
+- `src/features/universe/EntityProfile.tsx` (366 lines) — type-specific profile views
+
+**Files Modified:**
+- `src/features/universe/UniverseWorkspace.tsx` (+194 lines, -22 lines) — real data + selection
+
+**Total:**
+- Files Created: 2 (480 lines)
+- Files Modified: 1 (+172 net)
+
+### Insights
+
+**Technical:**
+- **Canon → Universe flow works** — CanonCharacter/CanonLocation/etc. → EntityProfile
+- **Type narrowing with `as` casting** — switch (category) + entity as CanonCharacter
+- **Empty state handling** — "Ще немає {label} в канону" when no entities
+
+**Product/UX:**
+- **Profile panel reveals entity depth** — користувач бачить всі поля (goal, trait, relations)
+- **Cinematic feel preserved** — golden icon, dark theme, gradient scrim
+- **Click to inspect** — карточка + профіль = швидкий overview + деталі
+
+### Blockers / Issues
+- **Жодних блокерів** — Universe real data integration працює end-to-end
+
+### Next Steps (Universe)
+1. **Filters** — search, sort, group by type/status/confirmed
+2. **Graph view** — visualize entity relationships (canon links)
+3. **Edit mode** — inline editing of entity properties (role, goal, desc, etc.)
+4. **Category dropdown** — quick switch between categories without going back to tree
+5. **Reconstruction overlay** — show affected scenes when entity changes (from prototype)
+
+### Important Notes
+- **Book screen ✅ COMPLETE** — SceneIntent + SceneEditor + Guardian + Real Data (Session 11 start)
+- **Universe screen 🔄 IN PROGRESS** — Tree + Workspace + Cards + Profile ✅ | Filters + Graph + Edit ⏳
+- **Next:** Director screen (after Universe complete) або продовження Universe (filters/graph)
+- **Commits pushed** to `feature/cinematic-ui-transformation` branch
+
+---
+
 ## 📅 Session 10: Canon System Phase 3 (Flip Source) ✅ + Phase 4 Start 🔄
 **Date:** 2026-06-01
 **Duration:** ~3.5 години
