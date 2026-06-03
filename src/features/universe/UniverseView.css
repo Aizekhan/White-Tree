@@ -346,6 +346,217 @@
   border: 1px solid rgba(217, 119, 6, 0.3);
   border-radius: 20px;
   padding: 4px 11px;
+  white-space: nowrap;
+}
+
+/* ==================== SEARCH ==================== */
+.ws-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 200px;
+  transition: border-color 0.2s;
+}
+
+.ws-search:focus-within {
+  border-color: rgba(217, 119, 6, 0.5);
+}
+
+.ws-search svg {
+  color: var(--tx-mid);
+  flex-shrink: 0;
+}
+
+.ws-search__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: var(--tx-hi);
+  font-family: inherit;
+}
+
+.ws-search__input::placeholder {
+  color: var(--tx-low);
+}
+
+.ws-search__clear {
+  background: transparent;
+  border: none;
+  color: var(--tx-mid);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  transition: 0.2s;
+}
+
+.ws-search__clear:hover {
+  background: var(--line);
+  color: var(--tx-hi);
+}
+
+/* ==================== CATEGORY DROPDOWN ==================== */
+.ws-cat-dropdown {
+  position: relative;
+}
+
+.ws-cat-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--tx-hi);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.ws-cat-btn:hover {
+  border-color: rgba(217, 119, 6, 0.4);
+  background: var(--gold-soft);
+}
+
+.ws-cat-btn svg:first-child {
+  color: var(--gold-lit);
+}
+
+.ws-cat-btn svg:last-child {
+  color: var(--tx-mid);
+  margin-left: -2px;
+}
+
+.ws-cat-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+  padding: 6px;
+  z-index: 100;
+  animation: dropdownIn 0.2s ease-out;
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ws-cat-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--tx);
+  cursor: pointer;
+  transition: 0.15s;
+  text-align: left;
+}
+
+.ws-cat-item:hover {
+  background: var(--line);
+  color: var(--tx-hi);
+}
+
+.ws-cat-item.is-active {
+  background: var(--gold-soft);
+  color: var(--gold-lit);
+  border: 1px solid rgba(217, 119, 6, 0.3);
+}
+
+.ws-cat-item svg {
+  color: var(--gold-lit);
+  flex-shrink: 0;
+}
+
+/* ==================== SORT DROPDOWN ==================== */
+.ws-sort-dropdown {
+  position: relative;
+}
+
+.ws-sort-btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--tx-mid);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.ws-sort-btn:hover {
+  border-color: rgba(217, 119, 6, 0.4);
+  background: var(--gold-soft);
+  color: var(--gold-lit);
+}
+
+.ws-sort-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+  padding: 6px;
+  z-index: 100;
+  animation: dropdownIn 0.2s ease-out;
+}
+
+.ws-sort-item {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--tx);
+  cursor: pointer;
+  transition: 0.15s;
+  text-align: left;
+}
+
+.ws-sort-item:hover {
+  background: var(--line);
+  color: var(--tx-hi);
+}
+
+.ws-sort-item.is-active {
+  background: var(--gold-soft);
+  color: var(--gold-lit);
+  border: 1px solid rgba(217, 119, 6, 0.3);
 }
 
 /* ==================== WORKSPACE CONTENT ==================== */
@@ -428,6 +639,22 @@
 .wcard__ic svg {
   width: 17px;
   height: 17px;
+}
+
+.wcard__badge {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 2;
+  padding: 3px 8px;
+  background: rgba(124, 58, 237, 0.9);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
 }
 
 .wcard__b {
