@@ -8,13 +8,17 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { useStoryStore } from '../../store/useStoryStore';
 import type { Project } from '../../types';
+import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+import ProjectEditModal from './ProjectEditModal';
 import './ProjectsView.css';
 
 export default function ProjectsView() {
   const navigate = useNavigate();
-  const { projects, setActiveProjectId } = useStoryStore();
+  const { projects, setActiveProjectId, setProjects } = useStoryStore();
   const [deletingProject, setDeletingProject] = useState<string | null>(null);
   const [deleteHoldProgress, setDeleteHoldProgress] = useState(0);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   const handleOpenProject = async (project: Project) => {
     await setActiveProjectId(project.id);
@@ -23,8 +27,25 @@ export default function ProjectsView() {
 
   const handleEditProject = (project: Project, e: React.MouseEvent) => {
     e.stopPropagation();
-    // TODO: Open edit project modal
-    alert(`✎ Редагувати проєкт\n\n"${project.title}"\n\n// TODO: Project edit modal`);
+    setEditingProject(project);
+  };
+
+  const handleSaveProject = async (updates: Partial<Project>) => {
+    if (!editingProject) return;
+
+    try {
+      // Update Firestore
+      const projectRef = doc(db, 'projects', editingProject.id);
+      await updateDoc(projectRef, updates);
+
+      // Update local state
+      setProjects(projects.map((p) => (p.id === editingProject.id ? { ...p, ...updates } : p)));
+
+      console.log('[ProjectsView] Project updated:', editingProject.id);
+    } catch (error) {
+      console.error('[ProjectsView] Update error:', error);
+      alert('❌ Помилка оновлення проєкту\n\n' + (error as Error).message);
+    }
   };
 
   const handleDeleteStart = (projectId: string, e: React.MouseEvent) => {
@@ -54,13 +75,23 @@ export default function ProjectsView() {
     document.addEventListener('mouseup', cleanup);
   };
 
-  const handleDeleteConfirm = (projectId: string) => {
+  const handleDeleteConfirm = async (projectId: string) => {
     // Final confirmation
     const confirmed = confirm('❌ Видалити всесвіт?\n\nЦя дія незворотна. Всі дані проєкту будуть втрачені.');
     if (confirmed) {
-      // TODO: Delete project from Firestore
-      console.log('Deleting project:', projectId);
-      alert(`🗑 Проєкт видалено\n\n// TODO: Real Firestore delete`);
+      try {
+        // Delete from Firestore
+        const projectRef = doc(db, 'projects', projectId);
+        await deleteDoc(projectRef);
+
+        // Update local state
+        setProjects(projects.filter((p) => p.id !== projectId));
+
+        console.log('[ProjectsView] Project deleted:', projectId);
+      } catch (error) {
+        console.error('[ProjectsView] Delete error:', error);
+        alert('❌ Помилка видалення проєкту\n\n' + (error as Error).message);
+      }
     }
     setDeletingProject(null);
     setDeleteHoldProgress(0);
@@ -176,6 +207,15 @@ export default function ProjectsView() {
             Створіть новий всесвіт і занурте читачів у вашу розповідь.
           </p>
         </div>
+      )}
+
+      {/* Edit Project Modal */}
+      {editingProject && (
+        <ProjectEditModal
+          project={editingProject}
+          onSave={handleSaveProject}
+          onClose={() => setEditingProject(null)}
+        />
       )}
     </div>
   );

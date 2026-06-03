@@ -1,0 +1,294 @@
+/**
+ * ProjectEditModal - Редагування проєкту
+ * Modal pattern з backdrop blur
+ */
+
+/* Overlay */
+.project-edit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Modal */
+.project-edit-modal {
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Header */
+.project-edit-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+.project-edit-modal__title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--tx-hi);
+  margin: 0;
+}
+
+.project-edit-modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--tx-mid);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.project-edit-modal__close:hover {
+  background: var(--bg-2);
+  border-color: var(--gold-1);
+  color: var(--tx-hi);
+}
+
+/* Body */
+.project-edit-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+}
+
+/* Field */
+.project-edit-modal__field {
+  margin-bottom: 20px;
+}
+
+.project-edit-modal__field:last-child {
+  margin-bottom: 0;
+}
+
+.project-edit-modal__label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tx-mid);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.project-edit-modal__input,
+.project-edit-modal__textarea,
+.project-edit-modal__select {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--tx-hi);
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.project-edit-modal__input:focus,
+.project-edit-modal__textarea:focus,
+.project-edit-modal__select:focus {
+  outline: none;
+  border-color: var(--gold-1);
+  background: var(--bg-1);
+}
+
+.project-edit-modal__input:disabled,
+.project-edit-modal__textarea:disabled,
+.project-edit-modal__select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.project-edit-modal__textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+}
+
+.project-edit-modal__hint {
+  display: block;
+  font-size: 11px;
+  color: var(--tx-mid);
+  opacity: 0.6;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* Cover */
+.project-edit-modal__cover {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.project-edit-modal__cover-preview {
+  width: 120px;
+  height: 160px;
+  flex-shrink: 0;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.project-edit-modal__cover-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
+}
+
+.project-edit-modal__cover-icon {
+  font-size: 48px;
+  opacity: 0.3;
+}
+
+.project-edit-modal__cover-actions {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.project-edit-modal__cover-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tx-mid);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.project-edit-modal__cover-btn:hover {
+  background: var(--bg-3);
+  border-color: var(--gold-1);
+  color: var(--tx-hi);
+}
+
+.project-edit-modal__cover-btn--danger:hover {
+  border-color: #ff4444;
+  color: #ff4444;
+}
+
+/* Footer */
+.project-edit-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 28px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-2);
+}
+
+.project-edit-modal__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.project-edit-modal__btn--secondary {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--tx-mid);
+}
+
+.project-edit-modal__btn--secondary:hover {
+  background: var(--bg-3);
+  border-color: var(--gold-1);
+  color: var(--tx-hi);
+}
+
+.project-edit-modal__btn--primary {
+  background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+  color: var(--bg-0);
+}
+
+.project-edit-modal__btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+}
+
+.project-edit-modal__btn--primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .project-edit-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .project-edit-modal__cover {
+    flex-direction: column;
+  }
+
+  .project-edit-modal__cover-preview {
+    width: 100%;
+    height: 200px;
+  }
+}
