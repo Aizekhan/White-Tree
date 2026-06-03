@@ -74,18 +74,28 @@
   - "No results" empty state with clear search button
   - Search term highlighting in entity names (golden background)
   - Differentiate between "no canon data" and "no search results"
+- [x] **Edit Mode for ALL Entity Types** (Phase 4.9)
+  - EditableField component (inline editing with Enter/Escape shortcuts)
+  - Character: role, trait, goal, developmentArc, status (all editable)
+  - Location: desc, atmos (comma-separated array)
+  - Event: when, act (number), desc
+  - Faction: motto, align, desc
+  - Artifact: rarity, owner, desc
+  - Save changes directly to canon via setCanon
+  - Auto-focus on edit start with text selection
 
 **Files Created:**
 - `src/features/universe/UniverseView.tsx` (MODIFIED from MVP)
-- `src/features/universe/UniverseView.css` (full styles + filters + sort + empty state)
+- `src/features/universe/UniverseView.css` (full styles + filters + sort + empty state + editable fields)
 - `src/features/universe/WorldTreeStage.tsx`
-- `src/features/universe/UniverseWorkspace.tsx` (MODIFIED with selection + filters + sort + UX)
+- `src/features/universe/UniverseWorkspace.tsx` (MODIFIED with selection + filters + sort + UX + edit state)
 - `src/features/universe/useUniverseCanon.ts`
-- `src/features/universe/EntityProfile.tsx`
+- `src/features/universe/EntityProfile.tsx` (MODIFIED with edit mode for all types)
+- `src/features/universe/EditableField.tsx` (NEW - inline editing component)
 
 **Remaining Tasks:**
 - [ ] **Graph view** (visualize entity relationships via D3.js)
-- [ ] **Edit mode** (inline editing of entity properties)
+- [ ] **Relations editor** (edit character relationships inline)
 - [ ] **Relations graph** (interactive visualization of canon links)
 - [ ] **Reconstruction overlay** (show affected scenes on entity change)
 - [ ] **Batch operations** (select multiple entities for bulk actions)
