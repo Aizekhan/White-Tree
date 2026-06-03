@@ -7,6 +7,7 @@ import { useState, useMemo } from 'react';
 import { ChevronDown, Calculator, Plus } from 'lucide-react';
 import { useBookScenes } from '../book/useBookScenes';
 import type { Shot } from './directorTypes';
+import ShotEditor from './ShotEditor';
 
 // MOCK shots для демо (TODO: replace with real Firestore data)
 const MOCK_SHOTS: Shot[] = [
@@ -38,12 +39,14 @@ export default function Storyboarding() {
   const { scenes, isLoading } = useBookScenes();
   const [selectedSceneId, setSelectedSceneId] = useState<string | null>(null);
   const [showSceneDropdown, setShowSceneDropdown] = useState(false);
+  const [editingShot, setEditingShot] = useState<Shot | null | undefined>(null); // null = closed, undefined = creating new, Shot = editing
+  const [shots, setShots] = useState<Shot[]>(MOCK_SHOTS); // TODO: replace with Firestore data
 
-  // Get shots for selected scene (MOCK for now)
-  const shots = useMemo(() => {
+  // Get shots for selected scene
+  const filteredShots = useMemo(() => {
     if (!selectedSceneId) return [];
-    return MOCK_SHOTS.filter((s) => s.sceneId === selectedSceneId);
-  }, [selectedSceneId]);
+    return shots.filter((s) => s.sceneId === selectedSceneId);
+  }, [selectedSceneId, shots]);
 
   // Auto-select first scene
   useState(() => {
@@ -56,6 +59,35 @@ export default function Storyboarding() {
   const handleCalculateShots = () => {
     // TODO: Call AI to suggest shot breakdown based on scene text
     alert('🎬 AI розраховує кадри...\n\nСимуляція: 3-5 кадрів буде згенеровано.\n\n// TODO: Real AI за AI_CONTRACTS.md §6');
+  };
+
+  // Handle save shot (create or update)
+  const handleSaveShot = (updatedShot: Partial<Shot>) => {
+    if (!selectedSceneId) return;
+
+    if (editingShot && typeof editingShot !== 'boolean') {
+      // Update existing shot
+      setShots(shots.map((s) => (s.id === editingShot.id ? { ...s, ...updatedShot } : s)));
+    } else {
+      // Create new shot
+      const newShot: Shot = {
+        id: `shot_${Date.now()}`,
+        sceneId: selectedSceneId,
+        orderIndex: filteredShots.length,
+        type: 'wide',
+        prompt: '',
+        createdAt: Date.now(),
+        ...updatedShot,
+      } as Shot;
+      setShots([...shots, newShot]);
+    }
+    setEditingShot(null);
+  };
+
+  // Handle generate image for shot
+  const handleGenerateImage = (shot: Shot) => {
+    // TODO: Real AI image generation
+    alert('🎨 AI малює кадр...\n\nСимуляція: 3-5 варіантів буде згенеровано.\n\n// TODO: Real AI за AI_CONTRACTS.md §6');
   };
 
   const selectedScene = scenes.find((s) => s.id === selectedSceneId);
@@ -126,7 +158,7 @@ export default function Storyboarding() {
       {/* Shots Grid */}
       {selectedSceneId && (
         <div className="storyboard__content">
-          {shots.length === 0 ? (
+          {filteredShots.length === 0 ? (
             <div className="storyboard__no-shots">
               <div className="storyboard__no-shots-icon">🎬</div>
               <div className="storyboard__no-shots-title">Немає кадрів</div>
@@ -134,14 +166,17 @@ export default function Storyboarding() {
                 Натисніть «Розрахувати к-ть кадрів» для AI-пропозиції<br />
                 або додайте кадр вручну
               </div>
-              <button className="storyboard__add-shot-btn">
+              <button
+                className="storyboard__add-shot-btn"
+                onClick={() => setEditingShot(undefined)}
+              >
                 <Plus size={18} />
                 Додати кадр вручну
               </button>
             </div>
           ) : (
             <div className="shots-grid">
-              {shots.map((shot) => (
+              {filteredShots.map((shot) => (
                 <div key={shot.id} className="shot-card">
                   {/* Shot Image */}
                   <div className="shot-card__media">
@@ -179,10 +214,16 @@ export default function Storyboarding() {
 
                   {/* Shot Actions */}
                   <div className="shot-card__actions">
-                    <button className="shot-card__btn shot-card__btn--edit">
+                    <button
+                      className="shot-card__btn shot-card__btn--edit"
+                      onClick={() => setEditingShot(shot)}
+                    >
                       Редагувати
                     </button>
-                    <button className="shot-card__btn shot-card__btn--draw">
+                    <button
+                      className="shot-card__btn shot-card__btn--draw"
+                      onClick={() => handleGenerateImage(shot)}
+                    >
                       Намалювати
                     </button>
                   </div>
@@ -191,6 +232,16 @@ export default function Storyboarding() {
             </div>
           )}
         </div>
+      )}
+
+      {/* Shot Editor Modal */}
+      {editingShot !== null && selectedSceneId && (
+        <ShotEditor
+          shot={typeof editingShot === 'object' ? editingShot : null}
+          sceneId={selectedSceneId}
+          onSave={handleSaveShot}
+          onClose={() => setEditingShot(null)}
+        />
       )}
     </div>
   );

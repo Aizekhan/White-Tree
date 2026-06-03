@@ -3,18 +3,46 @@
  * LoRA thresholds: 3, 15, 20 images
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Upload, Sparkles, Trash2 } from 'lucide-react';
+import { useStoryStore } from '../../store/useStoryStore';
 
 export default function VisualCanon() {
+  const { currentProject } = useStoryStore();
   const [selectedEntity, setSelectedEntity] = useState<string | null>(null);
 
-  // TODO: Fetch from real canon (characters + locations)
-  const entities = [
-    { id: 'char_1', name: 'Маркус Чен', type: 'character' },
-    { id: 'char_2', name: 'Елена Родрігес', type: 'character' },
-    { id: 'loc_1', name: 'Лабораторія', type: 'location' },
-  ];
+  // Get entities from real canon (characters + locations)
+  const entities = useMemo(() => {
+    if (!currentProject?.canon) return [];
+
+    const result: Array<{ id: string; name: string; type: 'character' | 'location'; refCount: number }> = [];
+
+    // Add characters
+    if (currentProject.canon.characters) {
+      currentProject.canon.characters.forEach((char) => {
+        result.push({
+          id: char.id,
+          name: char.name,
+          type: 'character',
+          refCount: 0, // TODO: count visual references when added
+        });
+      });
+    }
+
+    // Add locations
+    if (currentProject.canon.locations) {
+      currentProject.canon.locations.forEach((loc) => {
+        result.push({
+          id: loc.id,
+          name: loc.name,
+          type: 'location',
+          refCount: 0, // TODO: count visual references when added
+        });
+      });
+    }
+
+    return result;
+  }, [currentProject?.canon]);
 
   const handleGenerateReferences = () => {
     // TODO: Call AI to generate reference images
@@ -32,8 +60,17 @@ export default function VisualCanon() {
       </div>
 
       {/* Entity Grid */}
-      <div className="visual-canon__grid">
-        {entities.map((entity) => (
+      {entities.length === 0 ? (
+        <div className="visual-canon__empty">
+          <div className="visual-canon__empty-icon">👥</div>
+          <div className="visual-canon__empty-title">Немає персонажів чи локацій</div>
+          <div className="visual-canon__empty-desc">
+            Створіть персонажів та локації в розділі «Всесвіт» перед генерацією референсів
+          </div>
+        </div>
+      ) : (
+        <div className="visual-canon__grid">
+          {entities.map((entity) => (
           <div
             key={entity.id}
             className={`visual-canon__entity ${selectedEntity === entity.id ? 'is-active' : ''}`}
@@ -46,10 +83,11 @@ export default function VisualCanon() {
             <div className="visual-canon__entity-type">
               {entity.type === 'character' ? 'Персонаж' : 'Локація'}
             </div>
-            <div className="visual-canon__entity-count">0 / 3</div>
+            <div className="visual-canon__entity-count">{entity.refCount} / 3</div>
           </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Reference Manager */}
       {selectedEntity && (
