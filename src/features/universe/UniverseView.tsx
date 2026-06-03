@@ -1,47 +1,53 @@
 /**
- * UniverseView - Всесвіт (canon management)
- * Placeholder для порту з WhiteWrite WorldTree.html прототипу
+ * UniverseView - World Tree (Всесвіт)
+ * Джерело правди: WhiteWrite WorldTree.html + wt-world.jsx
+ *
+ * MVP:
+ * - TreeStage (візуал дерева - placeholder)
+ * - Workspace (категорії: персонажі/локації/події)
+ * - Character cards grid
+ * - Profile panel (правий aside)
+ *
+ * TODO: Граф, реконструкція, фільтри (next session)
  */
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import WorldTreeStage from './WorldTreeStage';
+import UniverseWorkspace from './UniverseWorkspace';
+import './UniverseView.css';
+
+export type UniverseCategory = 'characters' | 'locations' | 'events' | 'factions' | 'artifacts';
 
 export default function UniverseView() {
+  const [showWorkspace, setShowWorkspace] = useState(false);
+  const [category, setCategory] = useState<UniverseCategory>('characters');
+
   useEffect(() => {
     console.log('[UniverseView] Mounted');
   }, []);
 
+  const handleNodeClick = (clickedCategory: UniverseCategory) => {
+    setCategory(clickedCategory);
+    setShowWorkspace(true);
+  };
+
+  const handleBack = () => {
+    setShowWorkspace(false);
+  };
+
   return (
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--bg-0)',
-        color: 'var(--tx)',
-      }}
-    >
-      <div style={{ textAlign: 'center', maxWidth: '600px' }}>
-        <h1
-          style={{
-            fontFamily: 'var(--font-heading)',
-            color: 'var(--gold-bright)',
-            fontSize: '32px',
-            marginBottom: '16px',
-          }}
-        >
-          🌳 Всесвіт
-        </h1>
-        <p style={{ fontSize: '16px', lineHeight: '1.6', color: 'var(--tx-mid)' }}>
-          Дерево канону: персонажі, локації, події, фракції, артефакти.
-          <br />
-          <br />
-          <em style={{ color: 'var(--gold-lit)' }}>
-            Прототип: WhiteWrite WorldTree.html (wt-*.jsx)
-          </em>
-        </p>
-      </div>
+    <div className="wt-root">
+      {!showWorkspace && (
+        <WorldTreeStage onNodeClick={handleNodeClick} />
+      )}
+
+      {showWorkspace && (
+        <UniverseWorkspace
+          category={category}
+          onCategoryChange={setCategory}
+          onBack={handleBack}
+        />
+      )}
     </div>
   );
 }
