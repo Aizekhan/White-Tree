@@ -4,9 +4,9 @@
 
 ---
 
-## 📅 Session 11 (Continuation): UI Port — Universe (WorldTree) Real Data Integration 🔄
+## 📅 Session 11 (Continuation): UI Port — Universe (WorldTree) Complete Advanced Features ✅
 **Date:** 2026-06-03
-**Duration:** ~1 година (continuation session)
+**Duration:** ~2 години (continuation session)
 **AI Agent:** Claude Code (Sonnet 4.5)
 **Human:** Aizekhan
 
@@ -26,6 +26,19 @@
   - Artifact profile: rarity, owner, description
   - Entity selection state with active card styling (.is-active)
   - Clear selection on category change (useEffect)
+- [x] **Filters + Sort + Status Badges**
+  - Search filter (by entity name)
+  - Category dropdown (quick switch without going back to tree)
+  - Sort options: alphabetical, confirmed-first, inferred-first
+  - Visual badges on inferred entities (violet ~XX% confidence)
+  - Dynamic filtered count display (X / Y format)
+  - Outside click handling for dropdowns
+  - Animated dropdown menus
+- [x] **UX Improvements**
+  - "No results" empty state with clear search button
+  - Search term highlighting in entity names (golden background)
+  - Differentiate between "no canon data" and "no search results"
+  - Improved user feedback during search
 
 ### 🎉 WHAT GAVE WOW EFFECT
 - **Universe fully canon-aware** — no more hardcoded MOCK data (except fallback)
@@ -33,6 +46,10 @@
 - **Active card styling** — golden border on selected entity (cinematic feel)
 - **Type-safe entity display** — CanonEntityDisplay with proper type narrowing
 - **Zero breaking changes** — fallback to MOCK when canon doesn't exist
+- **Filters + Sort in one session** — search, category dropdown, 3 sort options + badges
+- **Search highlight** — instantly see matched terms with golden background
+- **Empty state UX** — clear "No results" vs "No canon data" distinction
+- **Confidence badges** — violet ~XX% badges on inferred entities (visual trust indicator)
 
 ### ⚠️ WHAT WAS TIME WASTE
 - Жодних часових втрат — integration була прямолінійна
@@ -41,12 +58,17 @@
 ### 📸 Visual Milestones (Screenshot Commits)
 - Commit `4727610`: Universe — Real canon data integration (useUniverseCanon hook)
 - Commit `d988651`: Universe — Entity selection + Profile panel (5 entity types)
+- Commit `3a1f521`: Universe — Filters + Sort + Status badges
+- Commit `dbe298e`: Universe — UX improvements (Empty state + Highlight)
 
 ### Key Decisions Made
 - **useUniverseCanon hook pattern** — аналогічно до useBookScenes (flattened access)
 - **Profile as router component** — EntityProfile renders type-specific subcomponent
 - **Fallback strategy** — hasCanon && entities.length > 0 ? real : MOCK
 - **Selection cleared on category change** — useEffect([category], ...)
+- **Search + Sort in useMemo** — combined filtering and sorting in single memo
+- **Confidence badges** — показуємо лише для inferred (confirmed:false) entities
+- **Highlight as ReactNode** — search term highlighting через JSX <mark>
 
 ### Code Changes
 **Files Created:**
@@ -54,11 +76,12 @@
 - `src/features/universe/EntityProfile.tsx` (366 lines) — type-specific profile views
 
 **Files Modified:**
-- `src/features/universe/UniverseWorkspace.tsx` (+194 lines, -22 lines) — real data + selection
+- `src/features/universe/UniverseWorkspace.tsx` (+526 lines, -50 lines) — real data + selection + filters + sort + UX
+- `src/features/universe/UniverseView.css` (+196 lines) — search, sort, badges, empty state, highlight styles
 
 **Total:**
 - Files Created: 2 (480 lines)
-- Files Modified: 1 (+172 net)
+- Files Modified: 2 (+672 net lines)
 
 ### Insights
 
@@ -76,17 +99,19 @@
 - **Жодних блокерів** — Universe real data integration працює end-to-end
 
 ### Next Steps (Universe)
-1. **Filters** — search, sort, group by type/status/confirmed
-2. **Graph view** — visualize entity relationships (canon links)
-3. **Edit mode** — inline editing of entity properties (role, goal, desc, etc.)
-4. **Category dropdown** — quick switch between categories without going back to tree
-5. **Reconstruction overlay** — show affected scenes when entity changes (from prototype)
+1. **Graph view** — visualize entity relationships (canon links) via D3.js or similar
+2. **Edit mode** — inline editing of entity properties (role, goal, desc, etc.)
+3. **Relations graph** — interactive visualization of character/location/event connections
+4. **Reconstruction overlay** — show affected scenes when entity changes (from prototype)
+5. **Batch operations** — select multiple entities for bulk actions
 
 ### Important Notes
 - **Book screen ✅ COMPLETE** — SceneIntent + SceneEditor + Guardian + Real Data (Session 11 start)
-- **Universe screen 🔄 IN PROGRESS** — Tree + Workspace + Cards + Profile ✅ | Filters + Graph + Edit ⏳
-- **Next:** Director screen (after Universe complete) або продовження Universe (filters/graph)
+- **Universe screen ✅ ADVANCED FEATURES COMPLETE** — Tree + Workspace + Cards + Profile + Filters + Sort + Badges + UX
+- **Universe (remaining)** — Graph view + Edit mode + Reconstruction overlay
+- **Next:** Director screen або продовження Universe (graph/edit)
 - **Commits pushed** to `feature/cinematic-ui-transformation` branch
+- **Commits:** `4727610`, `d988651`, `3a1f521`, `dbe298e`
 
 ---
 

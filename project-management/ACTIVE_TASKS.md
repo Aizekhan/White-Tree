@@ -46,9 +46,9 @@
 - `src/features/book/BookView.tsx` (edit state management)
 - `src/App.new.tsx` (Login fix)
 
-### 🔄 Universe Screen (PARTIAL ✅)
+### ✅ Universe Screen (ADVANCED FEATURES COMPLETE ✅)
 **Date:** 2026-06-03 (Session 11 continuation)
-**Commits:** `4727610` (canon integration), `d988651` (entity selection + profile)
+**Commits:** `4727610`, `d988651`, `3a1f521`, `dbe298e`
 
 **Completed:**
 - [x] WorldTreeStage (tree visualization with 5 clickable nodes)
@@ -63,24 +63,34 @@
   - Character/Location/Event/Faction/Artifact profiles
   - Active card styling (.is-active)
   - Clear selection on category change
+- [x] **Filters + Sort + Status Badges**
+  - Search filter (by entity name)
+  - Category dropdown (quick switch without going back to tree)
+  - Sort options: alphabetical, confirmed-first, inferred-first
+  - Visual badges on inferred entities (violet ~XX% confidence)
+  - Dynamic filtered count display (X / Y format)
+  - Outside click handling for dropdowns
+- [x] **UX Improvements**
+  - "No results" empty state with clear search button
+  - Search term highlighting in entity names (golden background)
+  - Differentiate between "no canon data" and "no search results"
 
 **Files Created:**
 - `src/features/universe/UniverseView.tsx` (MODIFIED from MVP)
-- `src/features/universe/UniverseView.css`
+- `src/features/universe/UniverseView.css` (full styles + filters + sort + empty state)
 - `src/features/universe/WorldTreeStage.tsx`
-- `src/features/universe/UniverseWorkspace.tsx` (MODIFIED with selection)
+- `src/features/universe/UniverseWorkspace.tsx` (MODIFIED with selection + filters + sort + UX)
 - `src/features/universe/useUniverseCanon.ts`
 - `src/features/universe/EntityProfile.tsx`
 
 **Remaining Tasks:**
-- [ ] **Filters** (search, sort, group by type/status/confirmed)
-- [ ] **Graph view** (visualize entity relationships)
+- [ ] **Graph view** (visualize entity relationships via D3.js)
 - [ ] **Edit mode** (inline editing of entity properties)
-- [ ] **Category dropdown** (quick switch without going back to tree)
+- [ ] **Relations graph** (interactive visualization of canon links)
 - [ ] **Reconstruction overlay** (show affected scenes on entity change)
-- [ ] **Relations graph** (D3.js visualization of canon links)
+- [ ] **Batch operations** (select multiple entities for bulk actions)
 
-**Status:** Core functionality ✅ COMPLETE | Advanced features ⏳ PENDING
+**Status:** Core + Advanced UI ✅ COMPLETE | Graph view + Edit mode ⏳ PENDING
 
 ### ⏳ Director Screen (NOT STARTED)
 **Status:** Awaiting Universe completion
