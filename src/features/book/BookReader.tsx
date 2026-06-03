@@ -5,10 +5,11 @@
  * MVP: два листи (розворот), навігація стрілками, пагінація кружечками
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Edit3 } from 'lucide-react';
 import SceneIntentPage, { type IntentId } from './SceneIntentPage';
 import SceneEditor from './SceneEditor';
+import type { BookScene } from './useBookScenes';
 import './BookReader.css';
 import './SceneIntentPage.css';
 
@@ -146,11 +147,12 @@ function PlaceholderPage({ text }: { text: string }) {
  */
 interface BookReaderProps {
   projectTitle?: string;
+  scenes?: BookScene[]; // Real scenes from architecture
   editMode?: boolean;
   onEdit?: () => void;
-  onSaveEdit?: (newText: string) => void;
+  onSaveEdit?: (sceneIndex: number, newText: string) => void;
   onCancelEdit?: () => void;
-  onGenerateNextScene?: (intent: IntentId, customNote?: string) => void;
+  onGenerateNextScene?: (sceneIndex: number, intent: IntentId, customNote?: string) => void;
 }
 
 /**
@@ -158,14 +160,79 @@ interface BookReaderProps {
  */
 export default function BookReader({
   projectTitle = 'Попіл Орелії',
+  scenes: bookScenes = [],
   editMode = false,
   onEdit,
   onSaveEdit,
   onCancelEdit,
   onGenerateNextScene,
 }: BookReaderProps) {
-  // Mock scenes (як у book.jsx:40-56) - потім замінимо на реальні дані з project
-  const SCENES: Scene[] = [
+  /**
+   * Convert BookScene[] to Scene[] format for rendering
+   * Each BookScene becomes one spread (2 leaves)
+   */
+  const realScenes = useMemo<Scene[]>(() => {
+    if (bookScenes.length === 0) return [];
+
+    // Title page (scene 0)
+    const titleScene: Scene = {
+      n: 0,
+      title: projectTitle,
+      pages: [
+        {
+          left: <TitlePage title={projectTitle} />,
+          right: <PlaceholderPage text="Зміст (TODO)" />,
+        },
+      ],
+    };
+
+    // Written scenes from architecture
+    const writtenScenes: Scene[] = bookScenes.map((bookScene, idx) => {
+      const hasText = !!bookScene.writtenText;
+
+      return {
+        n: idx + 1,
+        title: bookScene.title,
+        pages: [
+          {
+            // Left: scene header + description or written text
+            left: hasText ? (
+              <div className="page-inner">
+                <PageHeader kicker={`${bookScene.actTitle} · ${bookScene.chapterTitle}`} title={bookScene.title} />
+                <Prose>{bookScene.writtenText}</Prose>
+                <Folio n={String(idx * 2 + 1)} />
+              </div>
+            ) : (
+              <div className="page-inner">
+                <PageHeader kicker={`${bookScene.actTitle} · ${bookScene.chapterTitle}`} title={bookScene.title} />
+                <Prose first={bookScene.description[0]}>{bookScene.description.slice(1)}</Prose>
+                <Folio n={String(idx * 2 + 1)} />
+              </div>
+            ),
+            // Right: continuation or placeholder
+            right: <PlaceholderPage text={hasText ? "Продовження..." : "Ще не написано. Натисніть олівець для редагування."} />,
+          },
+        ],
+      };
+    });
+
+    // Final scene: Scene Intent page
+    const finalScene: Scene = {
+      n: bookScenes.length + 1,
+      title: 'Що далі?',
+      pages: [
+        {
+          left: <PlaceholderPage text="Колофон (кінець відомих сторінок)" />,
+          right: <SceneIntentPage sceneNumber={bookScenes.length} onGenerate={(intent, note) => onGenerateNextScene?.(bookScenes.length, intent, note)} />,
+        },
+      ],
+    };
+
+    return [titleScene, ...writtenScenes, finalScene];
+  }, [bookScenes, projectTitle, onGenerateNextScene]);
+
+  // Fallback to MOCK scenes if no real data
+  const MOCK_SCENES: Scene[] = [
     {
       n: 1,
       title: 'Тиша над колонією',
@@ -185,11 +252,14 @@ export default function BookReader({
       pages: [
         {
           left: <PlaceholderPage text="Колофон (кінець відомих сторінок)" />,
-          right: <SceneIntentPage sceneNumber={2} onGenerate={onGenerateNextScene} />,
+          right: <SceneIntentPage sceneNumber={2} onGenerate={(intent, note) => onGenerateNextScene?.(2, intent, note)} />,
         },
       ],
     },
   ];
+
+  // Use real scenes if available, fallback to MOCK
+  const SCENES = realScenes.length > 0 ? realScenes : MOCK_SCENES;
 
   const [sceneIdx, setSceneIdx] = useState(0);
   const [pageIdx, setPageIdx] = useState(0);
@@ -199,21 +269,35 @@ export default function BookReader({
   const totalPages = SCENES.reduce((sum, s) => sum + s.pages.length, 0);
   const currentPageNum = SCENES.slice(0, sceneIdx).reduce((sum, s) => sum + s.pages.length, 0) + pageIdx + 1;
 
-  // Replace right page with SceneEditor if in edit mode (scene 1, page 2)
-  const isEditablePage = sceneIdx === 0 && pageIdx === 1;
-  const storyContinuedText = `Оракул чекав на неї там, де закінчувалися мапи. Він пам'ятав не минуле — він пам'ятав уперед, і кожен спогад був раною, якої ще не сталося.
+  // Replace right page with SceneEditor if in edit mode
+  // Real scenes: sceneIdx 1+ (skip title page at sceneIdx 0)
+  // MOCK scenes: sceneIdx 0, pageIdx 1
+  const isRealSceneEditable = realScenes.length > 0 && sceneIdx > 0 && sceneIdx <= bookScenes.length;
+  const isMockEditable = realScenes.length === 0 && sceneIdx === 0 && pageIdx === 1;
+  const isEditablePage = isRealSceneEditable || isMockEditable;
+
+  // Get current scene for editing
+  const currentBookScene = isRealSceneEditable ? bookScenes[sceneIdx - 1] : null;
+  const editingSceneIndex = isRealSceneEditable ? sceneIdx - 1 : 1; // For real: sceneIdx-1, for MOCK: hardcoded 1
+
+  const sceneText = currentBookScene?.writtenText || currentBookScene?.description || `Оракул чекав на неї там, де закінчувалися мапи. Він пам'ятав не минуле — він пам'ятав уперед, і кожен спогад був раною, якої ще не сталося.
 
 «Щоб місто вдихнуло, — сказав він, — хтось має затримати подих назавжди.» Елена зрозуміла ціну раніше, ніж він договорив.`;
+
+  const sceneTitle = currentBookScene?.title || 'Жертва Оракула';
+  const sceneKicker = currentBookScene
+    ? `${currentBookScene.actTitle} · ${currentBookScene.chapterTitle} · чернетка`
+    : 'Розділ перший · чернетка';
 
   if (editMode && isEditablePage && onSaveEdit && onCancelEdit) {
     spread = {
       ...spread,
       right: (
         <SceneEditor
-          initialText={storyContinuedText}
-          sceneTitle="Жертва Оракула"
-          sceneKicker="Розділ перший · чернетка"
-          onSave={onSaveEdit}
+          initialText={sceneText}
+          sceneTitle={sceneTitle}
+          sceneKicker={sceneKicker}
+          onSave={(newText) => onSaveEdit(editingSceneIndex, newText)}
           onCancel={onCancelEdit}
         />
       ),

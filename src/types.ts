@@ -195,6 +195,10 @@ export interface ArchitectScene {
   characterGoals: string[];
   conflicts: string[];
   status?: "Planned" | "Drafted" | "Analyzed" | "Improved" | "Adapted";
+  writtenText?: string; // Written scene text (Book view)
+  adaptedText?: string; // Adapted text
+  adaptedTarget?: AdaptTarget; // Target format for adaptation
+  intent?: string; // Scene Intent direction for generation
 }
 
 export interface ArchitectChapter {
