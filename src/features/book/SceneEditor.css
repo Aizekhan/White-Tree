@@ -1,0 +1,363 @@
+/**
+ * SceneEditor Styles
+ * Джерело правди: WhiteWrite.html:229-284 (se-* classes)
+ *
+ * Scene Editor — редагування сцени з Guardian Dialog
+ */
+
+/* ==================== EDIT MODE CONTROLS ==================== */
+
+/* Page navigation for paginated edits */
+.se-pages {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  z-index: 10;
+}
+
+.se-pages__btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  background: rgba(201, 162, 75, 0.1);
+  border: 1px solid rgba(201, 162, 75, 0.25);
+  color: var(--parch-gold);
+  transition: all 0.2s ease;
+  font-size: 18px;
+}
+
+.se-pages__btn:hover:not(:disabled) {
+  background: rgba(201, 162, 75, 0.2);
+  border-color: rgba(201, 162, 75, 0.4);
+}
+
+.se-pages__btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.se-pages__cur {
+  font-size: 14px;
+  color: var(--parch-gold-deep);
+  letter-spacing: 0.05em;
+}
+
+/* ==================== EDIT MODE HINT ==================== */
+
+.se-hint {
+  font-style: italic;
+  font-size: clamp(13px, 1.3vw, 14px);
+  color: var(--ink-soft);
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.se-hint__pen {
+  font-size: 16px;
+  color: var(--parch-gold-deep);
+}
+
+/* ==================== EDITABLE PROSE ==================== */
+
+.se-prose {
+  font-size: clamp(15px, 1.6vw, 17px);
+  line-height: 1.75;
+  color: var(--ink);
+  text-align: justify;
+  hyphens: auto;
+  outline: none;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  min-height: 200px;
+}
+
+.se-prose:focus {
+  background: rgba(201, 162, 75, 0.05);
+  box-shadow: 0 0 0 2px rgba(201, 162, 75, 0.15);
+}
+
+/* ==================== GUARDIAN DIALOG ==================== */
+
+/* Guardian container (overlay above book) */
+.se-keeper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  max-width: 520px;
+  width: 90%;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: var(--parch);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(201, 162, 75, 0.3);
+}
+
+.se-keeper__title {
+  font-family: var(--font-book);
+  font-weight: 700;
+  font-size: clamp(20px, 2.2vw, 24px);
+  color: var(--ink);
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+.se-keeper__lead {
+  font-style: italic;
+  font-size: clamp(14px, 1.4vw, 16px);
+  color: var(--ink-soft);
+  margin: 0 0 24px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.se-keeper__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  background: rgba(201, 162, 75, 0.1);
+  border: 1px solid rgba(201, 162, 75, 0.2);
+  color: var(--parch-gold-deep);
+  transition: all 0.2s ease;
+  font-size: 16px;
+}
+
+.se-keeper__close:hover {
+  background: rgba(201, 162, 75, 0.2);
+  border-color: rgba(201, 162, 75, 0.4);
+}
+
+/* Custom scrollbar for Guardian */
+.se-keeper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.se-keeper::-webkit-scrollbar-thumb {
+  background: var(--parch-gold-deep);
+  border-radius: 10px;
+}
+
+.se-keeper::-webkit-scrollbar-track {
+  background: var(--parch-lo);
+}
+
+/* ==================== ENTITY PROPOSALS ==================== */
+
+.se-prop {
+  background: var(--parch-hi);
+  border: 2px solid var(--parch-lo);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: border-color 0.2s ease;
+}
+
+.se-prop:hover {
+  border-color: rgba(201, 162, 75, 0.4);
+}
+
+.se-prop__name {
+  font-family: var(--font-book);
+  font-weight: 700;
+  font-size: clamp(16px, 1.7vw, 18px);
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+
+.se-prop__types {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* Type selector buttons */
+.se-type {
+  flex: 1;
+  cursor: pointer;
+  font-family: var(--font-book);
+  font-size: clamp(13px, 1.3vw, 15px);
+  color: var(--parch-gold-deep);
+  background: transparent;
+  border: 2px solid var(--parch-lo);
+  border-radius: 8px;
+  padding: 10px 14px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.se-type:hover {
+  border-color: rgba(201, 162, 75, 0.5);
+  background: rgba(201, 162, 75, 0.08);
+}
+
+.se-type.is-on {
+  background: var(--parch-gold);
+  border-color: var(--parch-gold);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Confirm button */
+.se-btn--ok {
+  width: 100%;
+  cursor: pointer;
+  font-family: var(--font-book);
+  font-weight: 700;
+  font-size: clamp(15px, 1.5vw, 17px);
+  color: #1a1206;
+  background: linear-gradient(180deg, var(--parch-gold-lit), var(--parch-gold));
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  text-align: center;
+  transition: filter 0.2s ease;
+  box-shadow: 0 3px 10px rgba(154, 111, 37, 0.3);
+}
+
+.se-btn--ok:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.se-btn--ok:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ==================== CONFLICTS ==================== */
+
+.se-conflicts {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--parch-lo);
+}
+
+.se-conflicts__title {
+  font-family: var(--font-book);
+  font-weight: 700;
+  font-size: clamp(16px, 1.7vw, 18px);
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+
+.se-conflict {
+  background: rgba(220, 38, 38, 0.08);
+  border: 2px solid rgba(220, 38, 38, 0.3);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.se-conflict__msg {
+  font-size: clamp(14px, 1.4vw, 15px);
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.se-conflict__impact {
+  font-size: clamp(12px, 1.2vw, 13px);
+  color: rgba(220, 38, 38, 0.8);
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* ==================== COACH TIP ==================== */
+
+.se-coach {
+  position: fixed;
+  bottom: max(3vh, 40px);
+  right: max(3vw, 40px);
+  z-index: 90;
+  max-width: 340px;
+  background: var(--parch);
+  border-radius: 14px;
+  padding: 20px 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(201, 162, 75, 0.3);
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.se-coach__title {
+  font-family: var(--font-book);
+  font-weight: 700;
+  font-size: clamp(15px, 1.5vw, 16px);
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+
+.se-coach__text {
+  font-size: clamp(13px, 1.3vw, 14px);
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+
+.se-coach__dismiss {
+  width: 100%;
+  cursor: pointer;
+  font-family: var(--font-book);
+  font-size: clamp(13px, 1.3vw, 14px);
+  color: var(--parch-gold-deep);
+  background: transparent;
+  border: 1px solid rgba(201, 162, 75, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+}
+
+.se-coach__dismiss:hover {
+  background: rgba(201, 162, 75, 0.1);
+  border-color: rgba(201, 162, 75, 0.5);
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 768px) {
+  .se-keeper {
+    max-width: 90%;
+    padding: 24px 20px;
+  }
+
+  .se-prop {
+    padding: 16px;
+  }
+
+  .se-prop__types {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .se-coach {
+    max-width: 280px;
+    bottom: 20px;
+    right: 20px;
+    padding: 16px 18px;
+  }
+}

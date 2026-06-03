@@ -7,7 +7,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Edit3 } from 'lucide-react';
+import SceneIntentPage, { type IntentId } from './SceneIntentPage';
+import SceneEditor from './SceneEditor';
 import './BookReader.css';
+import './SceneIntentPage.css';
 
 /**
  * Scene structure (як у book.jsx:40-56)
@@ -143,13 +146,24 @@ function PlaceholderPage({ text }: { text: string }) {
  */
 interface BookReaderProps {
   projectTitle?: string;
+  editMode?: boolean;
   onEdit?: () => void;
+  onSaveEdit?: (newText: string) => void;
+  onCancelEdit?: () => void;
+  onGenerateNextScene?: (intent: IntentId, customNote?: string) => void;
 }
 
 /**
  * BookReader - основний компонент читання
  */
-export default function BookReader({ projectTitle = 'Попіл Орелії', onEdit }: BookReaderProps) {
+export default function BookReader({
+  projectTitle = 'Попіл Орелії',
+  editMode = false,
+  onEdit,
+  onSaveEdit,
+  onCancelEdit,
+  onGenerateNextScene,
+}: BookReaderProps) {
   // Mock scenes (як у book.jsx:40-56) - потім замінимо на реальні дані з project
   const SCENES: Scene[] = [
     {
@@ -165,15 +179,46 @@ export default function BookReader({ projectTitle = 'Попіл Орелії', o
       title: 'Перший контакт',
       pages: [{ left: <PlaceholderPage text="Сцена 2 (лівий лист)" />, right: <PlaceholderPage text="Сцена 2 (правий лист)" /> }],
     },
+    {
+      n: 3,
+      title: 'Що далі?',
+      pages: [
+        {
+          left: <PlaceholderPage text="Колофон (кінець відомих сторінок)" />,
+          right: <SceneIntentPage sceneNumber={2} onGenerate={onGenerateNextScene} />,
+        },
+      ],
+    },
   ];
 
   const [sceneIdx, setSceneIdx] = useState(0);
   const [pageIdx, setPageIdx] = useState(0);
 
   const scene = SCENES[sceneIdx];
-  const spread = scene.pages[pageIdx];
+  let spread = scene.pages[pageIdx];
   const totalPages = SCENES.reduce((sum, s) => sum + s.pages.length, 0);
   const currentPageNum = SCENES.slice(0, sceneIdx).reduce((sum, s) => sum + s.pages.length, 0) + pageIdx + 1;
+
+  // Replace right page with SceneEditor if in edit mode (scene 1, page 2)
+  const isEditablePage = sceneIdx === 0 && pageIdx === 1;
+  const storyContinuedText = `Оракул чекав на неї там, де закінчувалися мапи. Він пам'ятав не минуле — він пам'ятав уперед, і кожен спогад був раною, якої ще не сталося.
+
+«Щоб місто вдихнуло, — сказав він, — хтось має затримати подих назавжди.» Елена зрозуміла ціну раніше, ніж він договорив.`;
+
+  if (editMode && isEditablePage && onSaveEdit && onCancelEdit) {
+    spread = {
+      ...spread,
+      right: (
+        <SceneEditor
+          initialText={storyContinuedText}
+          sceneTitle="Жертва Оракула"
+          sceneKicker="Розділ перший · чернетка"
+          onSave={onSaveEdit}
+          onCancel={onCancelEdit}
+        />
+      ),
+    };
+  }
 
   // Persist reading position (як у book.jsx:92-95)
   useEffect(() => {

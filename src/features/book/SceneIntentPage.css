@@ -1,0 +1,118 @@
+/**
+ * SceneIntentPage Styles
+ * Джерело правди: WhiteWrite.html:290-316
+ */
+
+.page-intent {
+  /* Додатково для intent page */
+}
+
+.intent__lead {
+  font-style: italic;
+  color: #5b4527;
+  font-size: clamp(13px, 1.3vw, 16px);
+  line-height: 1.55;
+  margin: 0 0 16px;
+}
+
+/* Intent field (label + select) */
+.intent-field {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.intent-field__lbl {
+  display: block;
+  font-size: clamp(11px, 1.1vw, 13px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7a5b2c;
+  margin-bottom: 7px;
+}
+
+/* Select dropdown */
+.intent-select {
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-family: var(--font-book);
+  font-size: clamp(14px, 1.4vw, 16px);
+  color: var(--ink);
+  background: var(--parch-hi);
+  border: 2px solid var(--parch-lo);
+  border-radius: 10px;
+  padding: 12px 14px;
+  outline: none;
+  transition: box-shadow 0.2s ease;
+}
+
+.intent-select:focus {
+  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.22);
+}
+
+/* Custom note textarea */
+.intent-note {
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  margin-bottom: 14px;
+  font-family: var(--font-book);
+  font-size: clamp(13px, 1.3vw, 15px);
+  color: var(--ink);
+  background: var(--parch-hi);
+  border: 2px solid var(--parch-lo);
+  border-radius: 10px;
+  padding: 12px 14px;
+  outline: none;
+  line-height: 1.5;
+  transition: box-shadow 0.2s ease;
+}
+
+.intent-note:focus {
+  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.22);
+}
+
+.intent-note::placeholder {
+  color: rgba(122, 91, 44, 0.6);
+  font-style: italic;
+}
+
+/* Generate button */
+.intent-gen {
+  width: 100%;
+  cursor: pointer;
+  font-family: var(--font-book);
+  font-weight: 700;
+  font-size: clamp(15px, 1.5vw, 18px);
+  color: #1a1206;
+  background: linear-gradient(180deg, var(--parch-gold-lit), var(--parch-gold));
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  text-align: center;
+  transition: filter 0.2s ease;
+  box-shadow: 0 4px 12px rgba(154, 111, 37, 0.3);
+}
+
+.intent-gen:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.intent-gen:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .intent-select,
+  .intent-note {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .intent-gen {
+    font-size: 16px;
+    padding: 12px 18px;
+  }
+}
