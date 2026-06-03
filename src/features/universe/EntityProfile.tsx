@@ -168,7 +168,25 @@ function CharacterProfile({
 /**
  * Location profile
  */
-function LocationProfile({ entity }: { entity: CanonLocation }) {
+function LocationProfile({
+  entity,
+  editMode,
+  onSave,
+}: {
+  entity: CanonLocation;
+  editMode: boolean;
+  onSave: (updates: Partial<CanonLocation>) => void;
+}) {
+  const handleFieldSave = (field: keyof CanonLocation, value: string) => {
+    if (field === 'atmos') {
+      // Parse comma-separated string to array
+      const atmosArray = value.split(',').map((s) => s.trim()).filter(Boolean);
+      onSave({ atmos: atmosArray });
+    } else {
+      onSave({ [field]: value });
+    }
+  };
+
   return (
     <div className="profile">
       <div className="profile__hero">
@@ -182,26 +200,33 @@ function LocationProfile({ entity }: { entity: CanonLocation }) {
 
       <div className="profile__body">
         {/* Description */}
-        {entity.desc && (
-          <div className="dblk">
-            <div className="blk-h">
-              <MapPin />
-              Опис
-            </div>
-            <div className="dprose">{entity.desc}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <MapPin />
+            Опис
           </div>
-        )}
+          <EditableField
+            value={entity.desc || ''}
+            onSave={(v) => handleFieldSave('desc', v)}
+            placeholder="Додати опис локації..."
+            editMode={editMode}
+            multiline
+          />
+        </div>
 
         {/* Atmosphere */}
-        {entity.atmos && entity.atmos.length > 0 && (
-          <div className="dblk">
-            <div className="blk-h">
-              <Zap />
-              Атмосфера
-            </div>
-            <div className="dprose">{entity.atmos.join(', ')}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <Zap />
+            Атмосфера
           </div>
-        )}
+          <EditableField
+            value={entity.atmos?.join(', ') || ''}
+            onSave={(v) => handleFieldSave('atmos', v)}
+            placeholder="Додати атмосферу (через кому)..."
+            editMode={editMode}
+          />
+        </div>
       </div>
     </div>
   );
@@ -210,7 +235,27 @@ function LocationProfile({ entity }: { entity: CanonLocation }) {
 /**
  * Event profile
  */
-function EventProfile({ entity }: { entity: CanonEvent }) {
+function EventProfile({
+  entity,
+  editMode,
+  onSave,
+}: {
+  entity: CanonEvent;
+  editMode: boolean;
+  onSave: (updates: Partial<CanonEvent>) => void;
+}) {
+  const handleFieldSave = (field: keyof CanonEvent, value: string) => {
+    if (field === 'act') {
+      // Parse act as number
+      const actNum = parseInt(value, 10);
+      if (!isNaN(actNum)) {
+        onSave({ act: actNum });
+      }
+    } else {
+      onSave({ [field]: value });
+    }
+  };
+
   return (
     <div className="profile">
       <div className="profile__hero">
@@ -224,37 +269,47 @@ function EventProfile({ entity }: { entity: CanonEvent }) {
 
       <div className="profile__body">
         {/* When */}
-        {entity.when && (
-          <div className="dblk">
-            <div className="blk-h">
-              <Calendar />
-              Коли
-            </div>
-            <div className="dprose">{entity.when}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <Calendar />
+            Коли
           </div>
-        )}
+          <EditableField
+            value={entity.when || ''}
+            onSave={(v) => handleFieldSave('when', v)}
+            placeholder="Додати часовий маркер..."
+            editMode={editMode}
+          />
+        </div>
 
         {/* Act */}
-        {entity.act && (
-          <div className="dblk">
-            <div className="blk-h">
-              <Zap />
-              Акт
-            </div>
-            <div className="dprose">Акт {entity.act}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <Zap />
+            Акт
           </div>
-        )}
+          <EditableField
+            value={entity.act?.toString() || ''}
+            onSave={(v) => handleFieldSave('act', v)}
+            placeholder="Номер акту..."
+            editMode={editMode}
+          />
+        </div>
 
         {/* Description */}
-        {entity.desc && (
-          <div className="dblk">
-            <div className="blk-h">
-              <Calendar />
-              Опис
-            </div>
-            <div className="dprose">{entity.desc}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <Calendar />
+            Опис
           </div>
-        )}
+          <EditableField
+            value={entity.desc || ''}
+            onSave={(v) => handleFieldSave('desc', v)}
+            placeholder="Додати опис події..."
+            editMode={editMode}
+            multiline
+          />
+        </div>
       </div>
     </div>
   );
@@ -263,7 +318,19 @@ function EventProfile({ entity }: { entity: CanonEvent }) {
 /**
  * Faction profile
  */
-function FactionProfile({ entity }: { entity: CanonFaction }) {
+function FactionProfile({
+  entity,
+  editMode,
+  onSave,
+}: {
+  entity: CanonFaction;
+  editMode: boolean;
+  onSave: (updates: Partial<CanonFaction>) => void;
+}) {
+  const handleFieldSave = (field: keyof CanonFaction, value: string) => {
+    onSave({ [field]: value });
+  };
+
   return (
     <div className="profile">
       <div className="profile__hero">
@@ -277,39 +344,47 @@ function FactionProfile({ entity }: { entity: CanonFaction }) {
 
       <div className="profile__body">
         {/* Motto */}
-        {entity.motto && (
-          <div className="dblk">
-            <div className="blk-h">
-              <UsersIcon />
-              Девіз
-            </div>
-            <div className="dprose" style={{ fontStyle: 'italic' }}>
-              "{entity.motto}"
-            </div>
+        <div className="dblk">
+          <div className="blk-h">
+            <UsersIcon />
+            Девіз
           </div>
-        )}
+          <EditableField
+            value={entity.motto || ''}
+            onSave={(v) => handleFieldSave('motto', v)}
+            placeholder="Додати девіз фракції..."
+            editMode={editMode}
+          />
+        </div>
 
         {/* Alignment */}
-        {entity.align && (
-          <div className="dblk">
-            <div className="blk-h">
-              <Zap />
-              Вирівнювання
-            </div>
-            <div className="dprose">{entity.align}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <Zap />
+            Вирівнювання
           </div>
-        )}
+          <EditableField
+            value={entity.align || ''}
+            onSave={(v) => handleFieldSave('align', v)}
+            placeholder="Додати моральне вирівнювання..."
+            editMode={editMode}
+          />
+        </div>
 
         {/* Description */}
-        {entity.desc && (
-          <div className="dblk">
-            <div className="blk-h">
-              <UsersIcon />
-              Опис
-            </div>
-            <div className="dprose">{entity.desc}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <UsersIcon />
+            Опис
           </div>
-        )}
+          <EditableField
+            value={entity.desc || ''}
+            onSave={(v) => handleFieldSave('desc', v)}
+            placeholder="Додати опис фракції..."
+            editMode={editMode}
+            multiline
+          />
+        </div>
       </div>
     </div>
   );
@@ -318,7 +393,19 @@ function FactionProfile({ entity }: { entity: CanonFaction }) {
 /**
  * Artifact profile
  */
-function ArtifactProfile({ entity }: { entity: CanonArtifact }) {
+function ArtifactProfile({
+  entity,
+  editMode,
+  onSave,
+}: {
+  entity: CanonArtifact;
+  editMode: boolean;
+  onSave: (updates: Partial<CanonArtifact>) => void;
+}) {
+  const handleFieldSave = (field: keyof CanonArtifact, value: string) => {
+    onSave({ [field]: value });
+  };
+
   return (
     <div className="profile">
       <div className="profile__hero">
@@ -332,37 +419,47 @@ function ArtifactProfile({ entity }: { entity: CanonArtifact }) {
 
       <div className="profile__body">
         {/* Rarity */}
-        {entity.rarity && (
-          <div className="dblk">
-            <div className="blk-h">
-              <Package />
-              Рідкість
-            </div>
-            <div className="dprose">{entity.rarity}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <Package />
+            Рідкість
           </div>
-        )}
+          <EditableField
+            value={entity.rarity || ''}
+            onSave={(v) => handleFieldSave('rarity', v)}
+            placeholder="Додати рідкість..."
+            editMode={editMode}
+          />
+        </div>
 
         {/* Owner */}
-        {entity.owner && (
-          <div className="dblk">
-            <div className="blk-h">
-              <UsersIcon />
-              Власник
-            </div>
-            <div className="dprose">{entity.owner}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <UsersIcon />
+            Власник
           </div>
-        )}
+          <EditableField
+            value={entity.owner || ''}
+            onSave={(v) => handleFieldSave('owner', v)}
+            placeholder="Додати власника..."
+            editMode={editMode}
+          />
+        </div>
 
         {/* Description */}
-        {entity.desc && (
-          <div className="dblk">
-            <div className="blk-h">
-              <Package />
-              Опис
-            </div>
-            <div className="dprose">{entity.desc}</div>
+        <div className="dblk">
+          <div className="blk-h">
+            <Package />
+            Опис
           </div>
-        )}
+          <EditableField
+            value={entity.desc || ''}
+            onSave={(v) => handleFieldSave('desc', v)}
+            placeholder="Додати опис артефакту..."
+            editMode={editMode}
+            multiline
+          />
+        </div>
       </div>
     </div>
   );
@@ -423,13 +520,37 @@ export default function EntityProfile({
               />
             );
           case 'locations':
-            return <LocationProfile entity={entity as CanonLocation} />;
+            return (
+              <LocationProfile
+                entity={entity as CanonLocation}
+                editMode={editMode}
+                onSave={handleSave}
+              />
+            );
           case 'events':
-            return <EventProfile entity={entity as CanonEvent} />;
+            return (
+              <EventProfile
+                entity={entity as CanonEvent}
+                editMode={editMode}
+                onSave={handleSave}
+              />
+            );
           case 'factions':
-            return <FactionProfile entity={entity as CanonFaction} />;
+            return (
+              <FactionProfile
+                entity={entity as CanonFaction}
+                editMode={editMode}
+                onSave={handleSave}
+              />
+            );
           case 'artifacts':
-            return <ArtifactProfile entity={entity as CanonArtifact} />;
+            return (
+              <ArtifactProfile
+                entity={entity as CanonArtifact}
+                editMode={editMode}
+                onSave={handleSave}
+              />
+            );
           default:
             return (
               <div className="profile profile--empty">
