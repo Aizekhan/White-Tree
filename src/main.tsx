@@ -1,11 +1,14 @@
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
-// Phase 1: Integration with auth + projects
-import App from './AppRoot.tsx';
+// NEW: AppShell + Router integration (порт прототипу)
+import App from './App.new.tsx';
+// OLD: Phase 1 Integration with auth + projects
+// import App from './AppRoot.tsx';
 // TEMP: Cinematic UI demo (Phase 2 will integrate immersive UI)
 // import App from './AppCinematic.tsx';
 // Original standalone editor
 // import App from './App.tsx';
+import './styles/tokens.css';
 import './index.css';
 
 console.log('[MAIN] Starting app');

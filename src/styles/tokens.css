@@ -1,0 +1,171 @@
+/**
+ * WhiteWrite Design Tokens
+ * Джерело правди: White.html прототип
+ *
+ * Два режими:
+ * - DARK (Всесвіт/Режисер): темний з золотом/фіолетом
+ * - PARCHMENT (Книга): пергамент з чорнилом
+ */
+
+:root {
+  /* ==================== DARK THEME (Всесвіт/Режисер) ==================== */
+
+  /* Backgrounds */
+  --bg-0: #070608;
+  --bg-1: #0f0d12;
+  --bg-2: #16131a;
+  --bg-3: #1d1a22;
+
+  /* Lines/Borders */
+  --line: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.14);
+
+  /* Gold (primary accent) */
+  --gold: #d97706;
+  --gold-lit: #f0a93b;
+  --gold-bright: #f6cf7e;
+  --gold-soft: rgba(217, 119, 6, 0.16);
+
+  /* Violet (secondary accent) */
+  --violet: #7c3aed;
+  --violet-lit: #9d6bff;
+  --violet-soft: rgba(124, 58, 237, 0.16);
+
+  /* Text colors */
+  --tx-hi: #f3efe7;    /* High emphasis */
+  --tx: #c7c2bb;       /* Normal */
+  --tx-mid: #8a857e;   /* Medium emphasis */
+  --tx-low: #5d5953;   /* Low emphasis */
+
+  /* Status colors */
+  --st-draft: #e0564f;   /* Чернетка */
+  --st-review: #e0a829;  /* На розгляді */
+  --st-ready: #3fae6e;   /* Готово */
+  --st-done: #5b8def;    /* Завершено */
+
+  /* Layout */
+  --rail: 78px;
+
+  /* ==================== PARCHMENT THEME (Книга) ==================== */
+
+  /* Parchment colors (для книжкового режиму) - точні значення з WhiteWrite.html:16-24 */
+  --ink: #3a2c1d;           /* Чорнило основне */
+  --ink-soft: #6a5740;      /* Чорнило м'яке */
+  --parch-gold: #c9a24b;    /* Золото */
+  --parch-gold-lit: #f0d398; /* Золото світле */
+  --parch-gold-deep: #8c6a2e; /* Золото темне */
+  --parch: #ece0c4;         /* Пергамент основний */
+  --parch-hi: #f4ebd4;      /* Пергамент світлий */
+  --parch-lo: #d9c9a3;      /* Пергамент темний */
+  --night: #100b07;         /* Нічний фон (для світу навколо книги) */
+
+  /* ==================== TYPOGRAPHY ==================== */
+
+  /* Font families */
+  --font-heading: "Cinzel", serif;      /* Заголовки (Всесвіт/Режисер) */
+  --font-body: "Spectral", Georgia, serif; /* Тіло тексту */
+  --font-book: "Philosopher", serif;    /* Книга */
+  --font-mono: "JetBrains Mono", "Consolas", monospace; /* Числа/код */
+
+  /* Font weights */
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* ==================== SPACING ==================== */
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* ==================== BORDERS ==================== */
+
+  --radius-sm: 6px;
+  --radius-md: 9px;
+  --radius-lg: 13px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
+
+  /* ==================== SHADOWS ==================== */
+
+  /* Gilded button shadows (золоті кнопки) */
+  --shadow-gilded: inset 0 1px 0 rgba(255, 235, 180, 0.1),
+                   inset 0 0 0 1px rgba(255, 235, 180, 0.04),
+                   0 2px 9px rgba(0, 0, 0, 0.4);
+
+  --shadow-gilded-hover: inset 0 1px 0 rgba(255, 235, 180, 0.18),
+                         0 0 20px rgba(232, 170, 80, 0.28),
+                         0 2px 10px rgba(0, 0, 0, 0.45);
+
+  --shadow-gilded-active: inset 0 1px 0 rgba(255, 242, 205, 0.28),
+                          inset 0 0 12px rgba(246, 207, 126, 0.18),
+                          0 0 26px rgba(232, 170, 80, 0.42),
+                          0 2px 12px rgba(0, 0, 0, 0.5);
+
+  /* ==================== TRANSITIONS ==================== */
+
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
+
+/* ==================== GLOBAL RESETS ==================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--tx);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--fw-semibold);
+  color: var(--tx-hi);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* Focus rings (accessibility) */
+:focus-visible {
+  outline: 2px solid var(--gold-lit);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Custom scrollbar */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #26242c;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}

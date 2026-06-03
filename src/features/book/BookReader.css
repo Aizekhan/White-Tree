@@ -1,0 +1,404 @@
+/**
+ * BookReader Styles
+ * Джерело правди: WhiteWrite.html (рядки 10-300+)
+ *
+ * Пергаментний вигляд + книжковий розворот
+ */
+
+/* ==================== WORLD (темний фон навколо книги) ==================== */
+.book-world {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(
+    120% 90% at 50% 42%,
+    #241809 0%,
+    #160f08 42%,
+    #0b0805 78%,
+    #070503 100%
+  );
+  perspective: 2600px;
+  font-family: var(--font-book);
+  color: var(--ink);
+}
+
+.book-ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(45% 38% at 50% 40%, rgba(232, 184, 96, 0.2), rgba(232, 184, 96, 0) 70%),
+    radial-gradient(80% 60% at 50% 120%, rgba(120, 80, 30, 0.18), rgba(0, 0, 0, 0) 60%);
+  mix-blend-mode: screen;
+  animation: breathe 9s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.book-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(70% 70% at 50% 46%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, 0.6) 100%);
+  z-index: 40;
+}
+
+/* ==================== BOOK STAGE ==================== */
+.book-stage {
+  position: relative;
+  z-index: 10;
+  transform-style: preserve-3d;
+}
+
+.book {
+  position: relative;
+  width: calc(min(540px, 47vw) * 2);
+  height: min(740px, 80vh);
+  transform-style: preserve-3d;
+  transform: rotateX(1deg);
+  transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.book__spine {
+  position: absolute;
+  left: 50%;
+  top: -1.4%;
+  width: 26px;
+  height: 103%;
+  transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(40, 26, 12, 0.55) 38%,
+    rgba(20, 12, 6, 0.85) 50%,
+    rgba(40, 26, 12, 0.55) 62%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  filter: blur(0.3px);
+}
+
+/* ==================== LEAVES (сторінки) ==================== */
+.leaf {
+  position: absolute;
+  top: 0;
+  width: min(540px, 47vw);
+  height: 100%;
+  background: var(--parch);
+  overflow: hidden;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+}
+
+.leaf--left {
+  right: 50%;
+  border-radius: 16px 0 0 16px;
+}
+
+.leaf--right {
+  left: 50%;
+  border-radius: 0 16px 16px 0;
+}
+
+/* Page inner content */
+.page-inner {
+  position: absolute;
+  inset: 0;
+  padding: clamp(50px, 6vh, 80px) clamp(40px, 5vw, 70px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+}
+
+/* Custom scrollbar for pages */
+.page-inner::-webkit-scrollbar {
+  width: 8px;
+}
+
+.page-inner::-webkit-scrollbar-thumb {
+  background: var(--parch-gold-deep);
+  border-radius: 10px;
+}
+
+.page-inner::-webkit-scrollbar-track {
+  background: var(--parch-lo);
+}
+
+/* ==================== PAGE TYPOGRAPHY ==================== */
+
+/* Page header */
+.page-head {
+  margin-bottom: 20px;
+}
+
+.page-head__kicker {
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--parch-gold-deep);
+  margin-bottom: 8px;
+}
+
+.page-head__title {
+  font-family: var(--font-book);
+  font-weight: 700;
+  font-size: clamp(20px, 2.4vw, 26px);
+  color: var(--ink);
+  margin: 0 0 12px;
+  letter-spacing: 0.02em;
+}
+
+.page-head__rule {
+  height: 1px;
+  background: linear-gradient(90deg, var(--parch-gold-deep), transparent);
+  width: 70%;
+}
+
+/* Prose (текст з drop-cap) */
+.prose {
+  font-size: clamp(15px, 1.6vw, 17px);
+  line-height: 1.75;
+  color: var(--ink);
+  margin: 0 0 16px;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.prose__cap {
+  float: left;
+  font-size: clamp(48px, 5.5vw, 64px);
+  line-height: 0.85;
+  margin: 0 8px 0 0;
+  font-weight: 700;
+  color: var(--parch-gold-deep);
+}
+
+/* Folio (номер сторінки) */
+.folio {
+  margin-top: auto;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-soft);
+  letter-spacing: 0.1em;
+  padding-top: 20px;
+}
+
+/* ==================== TITLE PAGE ==================== */
+.page-title {
+  justify-content: center;
+  text-align: center;
+  gap: 0;
+}
+
+.title-mark {
+  font-size: clamp(36px, 4vw, 48px);
+  color: var(--parch-gold);
+  margin-bottom: 30px;
+}
+
+.title-kicker {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--parch-gold-deep);
+  margin-bottom: 16px;
+}
+
+.title-name {
+  font-family: var(--font-book);
+  font-weight: 700;
+  font-size: clamp(32px, 4.2vw, 52px);
+  color: var(--ink);
+  margin: 0 0 20px;
+  line-height: 1.1;
+}
+
+.title-sub {
+  font-style: italic;
+  font-size: clamp(14px, 1.5vw, 17px);
+  color: var(--ink-soft);
+  margin-bottom: 32px;
+}
+
+.title-orn {
+  font-size: 18px;
+  color: var(--parch-gold);
+  letter-spacing: 0.5em;
+  margin: 32px 0;
+}
+
+.title-epigraph {
+  font-style: italic;
+  font-size: clamp(14px, 1.4vw, 16px);
+  color: var(--ink-soft);
+  max-width: 380px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* ==================== NAVIGATION ==================== */
+
+/* Arrow buttons (кутові кнопки) */
+.book-nav {
+  position: fixed;
+  z-index: 50;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  background: rgba(201, 162, 75, 0.12);
+  border: 1px solid rgba(201, 162, 75, 0.3);
+  color: var(--parch-gold);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.book-nav svg {
+  width: 26px;
+  height: 26px;
+}
+
+.book-nav:hover {
+  background: rgba(201, 162, 75, 0.22);
+  border-color: rgba(201, 162, 75, 0.6);
+  color: var(--parch-gold-lit);
+  transform: scale(1.08);
+}
+
+.book-nav--prev {
+  left: max(3vw, 40px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.book-nav--prev:hover {
+  transform: translateY(-50%) scale(1.08);
+}
+
+.book-nav--next {
+  right: max(3vw, 40px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.book-nav--next:hover {
+  transform: translateY(-50%) scale(1.08);
+}
+
+/* Pagination dots (кружечки з номерами) */
+.book-pagination {
+  position: fixed;
+  bottom: max(3vh, 30px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  gap: 8px;
+  background: rgba(10, 7, 4, 0.6);
+  backdrop-filter: blur(12px);
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 162, 75, 0.25);
+}
+
+.book-page-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--parch-gold-deep);
+  background: transparent;
+  border: 1px solid rgba(201, 162, 75, 0.3);
+  transition: all 0.2s ease;
+}
+
+.book-page-dot:hover {
+  background: rgba(201, 162, 75, 0.15);
+  border-color: rgba(201, 162, 75, 0.5);
+  color: var(--parch-gold);
+}
+
+.book-page-dot.is-active {
+  background: var(--parch-gold);
+  border-color: var(--parch-gold-lit);
+  color: var(--ink);
+}
+
+/* Edit button (олівець) */
+.book-edit-btn {
+  position: fixed;
+  top: max(3vh, 130px);
+  right: max(3vw, 40px);
+  z-index: 50;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  background: rgba(201, 162, 75, 0.12);
+  border: 1px solid rgba(201, 162, 75, 0.3);
+  color: var(--parch-gold);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.book-edit-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.book-edit-btn:hover {
+  background: rgba(201, 162, 75, 0.25);
+  border-color: rgba(201, 162, 75, 0.6);
+  color: var(--parch-gold-lit);
+  transform: scale(1.1);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  .book {
+    width: calc(min(90vw, 400px) * 2);
+    height: min(85vh, 600px);
+  }
+
+  .leaf {
+    width: min(90vw, 400px);
+  }
+
+  .page-inner {
+    padding: 40px 30px;
+  }
+
+  .book-nav {
+    width: 44px;
+    height: 44px;
+  }
+
+  .book-pagination {
+    bottom: 20px;
+    padding: 8px 12px;
+  }
+
+  .book-page-dot {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+}

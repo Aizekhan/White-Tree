@@ -1,0 +1,26 @@
+<svg width="108" height="108" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Тимчасовий лого: стилізоване дерево -->
+  <!-- Джерело: White.html має справжнє зображення, це placeholder -->
+
+  <defs>
+    <linearGradient id="tree-gradient" x1="54" y1="0" x2="54" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f6cf7e"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Стовбур -->
+  <rect x="49" y="60" width="10" height="35" fill="url(#tree-gradient)" rx="2"/>
+
+  <!-- Крона (3 рівні) -->
+  <path d="M 54 15 L 70 40 L 38 40 Z" fill="url(#tree-gradient)" opacity="0.9"/>
+  <path d="M 54 30 L 75 55 L 33 55 Z" fill="url(#tree-gradient)" opacity="0.8"/>
+  <path d="M 54 45 L 80 70 L 28 70 Z" fill="url(#tree-gradient)" opacity="0.7"/>
+
+  <!-- Коріння (стилізоване) -->
+  <path d="M 49 95 Q 35 100 30 105" stroke="url(#tree-gradient)" stroke-width="2" fill="none" opacity="0.6"/>
+  <path d="M 59 95 Q 73 100 78 105" stroke="url(#tree-gradient)" stroke-width="2" fill="none" opacity="0.6"/>
+
+  <!-- Світіння (glow effect) -->
+  <circle cx="54" cy="54" r="45" fill="none" stroke="#f6cf7e" stroke-width="1" opacity="0.2"/>
+</svg>
