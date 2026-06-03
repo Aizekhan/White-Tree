@@ -198,7 +198,7 @@ function HomeRedirect({ isAuthenticated }: { isAuthenticated: boolean }) {
     return <Navigate to="/projects" replace />;
   }
 
-  return <Login />;
+  return <Login t={{}} />;
 }
 
 /**
