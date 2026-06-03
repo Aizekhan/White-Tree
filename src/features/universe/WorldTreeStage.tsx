@@ -6,14 +6,15 @@
  * TODO: справжнє дерево (SVG або зображення) next session
  */
 
-import { User, MapPin, Calendar, Users, Package } from 'lucide-react';
-import type { UniverseCategory } from './UniverseView';
+import { User, MapPin, Calendar, Users, Package, Network } from 'lucide-react';
+import type { UniverseCategory, UniverseView } from './UniverseView';
 
 interface WorldTreeStageProps {
   onNodeClick: (category: UniverseCategory) => void;
+  onViewChange: (view: UniverseView) => void;
 }
 
-export default function WorldTreeStage({ onNodeClick }: WorldTreeStageProps) {
+export default function WorldTreeStage({ onNodeClick, onViewChange }: WorldTreeStageProps) {
   const nodes = [
     { category: 'characters' as UniverseCategory, label: 'Персонажі', icon: User, position: { top: '25%', left: '30%' } },
     { category: 'locations' as UniverseCategory, label: 'Локації', icon: MapPin, position: { top: '35%', right: '30%' } },
@@ -67,6 +68,16 @@ export default function WorldTreeStage({ onNodeClick }: WorldTreeStageProps) {
         <span className="tree-hint__mark">✦</span>
         Оберіть категорію для перегляду канону
       </div>
+
+      {/* Graph View Toggle */}
+      <button
+        className="tree-graph-btn"
+        onClick={() => onViewChange('graph')}
+        title="Переглянути граф зв'язків"
+      >
+        <Network size={18} />
+        <span>Граф Зв'язків</span>
+      </button>
     </div>
   );
 }
