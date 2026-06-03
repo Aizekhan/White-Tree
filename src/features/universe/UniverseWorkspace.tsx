@@ -2,14 +2,16 @@
  * UniverseWorkspace - workspace для категорій (персонажі/локації/події)
  * Джерело правди: WhiteWrite WorldTree.html ws-* classes
  *
- * Integration: Real data from project.canon
- * TODO: filters, profile, graph (next session)
+ * Integration: Real data from project.canon + Entity selection + Profile panel
+ * TODO: filters, graph, edit mode (next session)
  */
 
+import { useState, useEffect } from 'react';
 import { ArrowLeft, User, MapPin, Calendar, Users, Package } from 'lucide-react';
 import type { UniverseCategory } from './UniverseView';
 import { useUniverseCanon, type CanonEntityDisplay } from './useUniverseCanon';
 import type { CanonCharacter, CanonLocation, CanonEvent, CanonFaction, CanonArtifact } from '../../canon/canonTypes';
+import EntityProfile from './EntityProfile';
 
 interface UniverseWorkspaceProps {
   category: UniverseCategory;
@@ -97,6 +99,14 @@ export default function UniverseWorkspace({
 
   const { getEntities, getCount, hasCanon } = useUniverseCanon();
 
+  // Selection state
+  const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
+
+  // Clear selection when category changes
+  useEffect(() => {
+    setSelectedEntityId(null);
+  }, [category]);
+
   // Use real canon data if available, otherwise fallback to MOCK
   const realEntities = getEntities(category);
   const entities = hasCanon && realEntities.length > 0
@@ -104,6 +114,16 @@ export default function UniverseWorkspace({
     : (category === 'characters' ? MOCK_CHARACTERS : []);
 
   const count = hasCanon ? getCount(category) : entities.length;
+
+  // Find selected entity
+  const selectedEntity = selectedEntityId
+    ? entities.find((e) => e.id === selectedEntityId)
+    : null;
+
+  // Handle entity click
+  const handleEntityClick = (entityId: string) => {
+    setSelectedEntityId(entityId);
+  };
 
   return (
     <div className="ws">
@@ -141,7 +161,11 @@ export default function UniverseWorkspace({
           ) : (
             <div className="wcards">
               {entities.map((entity) => (
-                <div key={entity.id} className="wcard">
+                <div
+                  key={entity.id}
+                  className={`wcard ${selectedEntityId === entity.id ? 'is-active' : ''}`}
+                  onClick={() => handleEntityClick(entity.id)}
+                >
                   <div className="wcard__media">
                     <div className="wcard__scrim" />
                     <div className="wcard__ic">
@@ -165,9 +189,13 @@ export default function UniverseWorkspace({
 
         {/* Aside (Profile) */}
         <div className="ws-aside">
-          <div className="profile profile--empty">
-            Оберіть сутність для перегляду деталей
-          </div>
+          {selectedEntity ? (
+            <EntityProfile entity={selectedEntity} category={category} />
+          ) : (
+            <div className="profile profile--empty">
+              Оберіть сутність для перегляду деталей
+            </div>
+          )}
         </div>
       </div>
     </div>
