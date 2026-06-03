@@ -15,6 +15,9 @@ import BookView from './features/book/BookView';
 import UniverseView from './features/universe/UniverseView';
 import DirectorView from './features/director/DirectorView';
 
+// Landing
+import StartScreen from './features/landing/StartScreen';
+
 // Sections (на головній)
 import ProjectsView from './features/home/ProjectsView';
 import KnowledgeBaseView from './features/home/KnowledgeBaseView';
@@ -144,6 +147,11 @@ function AppContent() {
     );
   }
 
+  // StartScreen не потребує AppShell (повноекранний layout)
+  if (location.pathname === '/') {
+    return <StartScreen />;
+  }
+
   return (
     <AppShell
       mode={mode}
@@ -156,9 +164,6 @@ function AppContent() {
       onGoHome={handleGoHome}
     >
       <Routes>
-        {/* Home */}
-        <Route path="/" element={<HomeRedirect isAuthenticated={!!user} />} />
-
         {/* Sections */}
         <Route
           path="/projects"
@@ -186,19 +191,6 @@ function AppContent() {
       </Routes>
     </AppShell>
   );
-}
-
-/**
- * Home redirect logic
- */
-function HomeRedirect({ isAuthenticated }: { isAuthenticated: boolean }) {
-  // Якщо залогінений → перекинути на проекти
-  // Якщо ні → показати лендінг/логін
-  if (isAuthenticated) {
-    return <Navigate to="/projects" replace />;
-  }
-
-  return <Login t={{}} />;
 }
 
 /**

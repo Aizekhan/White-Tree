@@ -1,77 +1,182 @@
 /**
- * ProjectsView - Проекти (список всесвітів)
- * Placeholder для порту з White.html (#view-narr)
+ * ProjectsView - сторінка з картками проєктів (маршрут /projects)
+ * Еталон: White.html fillHome (narr view)
  */
 
-import { useEffect } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { useStoryStore } from '../../store/useStoryStore';
+import type { Project } from '../../types';
+import './ProjectsView.css';
 
 export default function ProjectsView() {
-  useEffect(() => {
-    console.log('[ProjectsView] Mounted');
-  }, []);
+  const navigate = useNavigate();
+  const { projects, setActiveProjectId } = useStoryStore();
+  const [deletingProject, setDeletingProject] = useState<string | null>(null);
+  const [deleteHoldProgress, setDeleteHoldProgress] = useState(0);
+
+  const handleOpenProject = async (project: Project) => {
+    await setActiveProjectId(project.id);
+    navigate('/book');
+  };
+
+  const handleEditProject = (project: Project, e: React.MouseEvent) => {
+    e.stopPropagation();
+    // TODO: Open edit project modal
+    alert(`✎ Редагувати проєкт\n\n"${project.title}"\n\n// TODO: Project edit modal`);
+  };
+
+  const handleDeleteStart = (projectId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDeletingProject(projectId);
+    setDeleteHoldProgress(0);
+
+    // 5-second hold timer
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 2; // 100% in 5 seconds (50 ticks * 2%)
+      setDeleteHoldProgress(progress);
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        handleDeleteConfirm(projectId);
+      }
+    }, 100);
+
+    // Cleanup on release
+    const cleanup = () => {
+      clearInterval(interval);
+      setDeletingProject(null);
+      setDeleteHoldProgress(0);
+      document.removeEventListener('mouseup', cleanup);
+    };
+    document.addEventListener('mouseup', cleanup);
+  };
+
+  const handleDeleteConfirm = (projectId: string) => {
+    // Final confirmation
+    const confirmed = confirm('❌ Видалити всесвіт?\n\nЦя дія незворотна. Всі дані проєкту будуть втрачені.');
+    if (confirmed) {
+      // TODO: Delete project from Firestore
+      console.log('Deleting project:', projectId);
+      alert(`🗑 Проєкт видалено\n\n// TODO: Real Firestore delete`);
+    }
+    setDeletingProject(null);
+    setDeleteHoldProgress(0);
+  };
 
   return (
-    <div
-      className="view is-on"
-      style={{
-        position: 'absolute',
-        top: '118px',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        overflowY: 'auto',
-        background: `radial-gradient(80% 50% at 100% 0%, rgba(124,58,237,0.07), transparent 60%),
-                     radial-gradient(70% 50% at 0% 100%, rgba(217,119,6,0.06), transparent 55%),
-                     var(--bg-0)`,
-      }}
-    >
-      <div style={{ padding: 'max(4vh, 40px) 20px 60px', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ marginBottom: '32px', textAlign: 'center' }}>
-          <h1
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: '36px',
-              color: 'var(--tx-hi)',
-              marginBottom: '8px',
-            }}
-          >
-            Ваші Проєкти
-          </h1>
-          <p style={{ fontSize: '15px', color: 'var(--tx-mid)' }}>
-            Керуйте вашими narrative всесвітами
-          </p>
+    <div className="projects-view">
+      {/* Header */}
+      <div className="projects-view__header">
+        <h1 className="projects-view__title">Ваші Проєкти</h1>
+        <p className="projects-view__subtitle">
+          Всесвіти, які ви створили. Кожен — окрема історія зі своїм каноном.
+        </p>
+      </div>
+
+      {/* Projects Grid */}
+      <div className="projects-grid">
+        {/* New Project Card */}
+        <div className="project-card project-card--new" onClick={() => alert('＋ Новий всесвіт\n\n// TODO: Create project flow')}>
+          <div className="project-card__new-icon">
+            <Plus size={48} />
+          </div>
+          <h3 className="project-card__new-title">Новий всесвіт</h3>
+          <p className="project-card__new-desc">Створіть нову історію</p>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '18px',
-          }}
-        >
-          {/* Placeholder карточки проектів */}
-          <div
-            style={{
-              background: 'var(--bg-2)',
-              border: '1px solid var(--line)',
-              borderRadius: '13px',
-              padding: '18px',
-              minHeight: '200px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--tx-mid)',
-              fontStyle: 'italic',
-            }}
-          >
-            <p style={{ textAlign: 'center' }}>
-              Список проектів
-              <br />
-              (інтеграція з Firestore)
-            </p>
-          </div>
-        </div>
+        {/* Project Cards */}
+        {projects.map((project) => {
+          const isDeleting = deletingProject === project.id;
+
+          return (
+            <div
+              key={project.id}
+              className={`project-card ${isDeleting ? 'project-card--deleting' : ''}`}
+              onClick={() => handleOpenProject(project)}
+            >
+              {/* Cover */}
+              <div className="project-card__cover">
+                {/* TODO: Replace with project.cover when field added */}
+                <img
+                  src="/placeholders/ph-project.png"
+                  alt={project.title}
+                  className="project-card__cover-img"
+                  onError={(e) => {
+                    // Fallback to gradient if placeholder not found
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+                <div className="project-card__cover-fallback">
+                  <div className="project-card__cover-icon">📖</div>
+                </div>
+
+                {/* Status Badge */}
+                {/* TODO: Add project.status field */}
+                <div className="project-card__badge">активний</div>
+              </div>
+
+              {/* Body */}
+              <div className="project-card__body">
+                <h3 className="project-card__title">{project.title}</h3>
+
+                {/* Meta */}
+                {/* TODO: Add project.genre and project.scope fields */}
+                <div className="project-card__meta">
+                  {project.language === 'UA' ? 'Українська' : 'English'} · {project.tier}
+                </div>
+
+                {/* Description */}
+                <p className="project-card__desc">
+                  {project.description || 'Немає опису'}
+                </p>
+
+                {/* Action Button */}
+                <button className="project-card__open-btn">
+                  Відкрити всесвіт
+                </button>
+              </div>
+
+              {/* Corner Actions */}
+              <div className="project-card__actions">
+                <button
+                  className="project-card__action-btn project-card__action-btn--edit"
+                  onClick={(e) => handleEditProject(project, e)}
+                  title="Редагувати"
+                >
+                  <Edit2 size={14} />
+                </button>
+                <button
+                  className={`project-card__action-btn project-card__action-btn--delete ${isDeleting ? 'is-active' : ''}`}
+                  onMouseDown={(e) => handleDeleteStart(project.id, e)}
+                  title="Видалити (утримайте 5 сек)"
+                >
+                  <Trash2 size={14} />
+                  {isDeleting && (
+                    <div
+                      className="project-card__delete-progress"
+                      style={{ width: `${deleteHoldProgress}%` }}
+                    />
+                  )}
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
+
+      {/* Empty State */}
+      {projects.length === 0 && (
+        <div className="projects-view__empty">
+          <div className="projects-view__empty-icon">✨</div>
+          <h2 className="projects-view__empty-title">Почніть свою першу історію</h2>
+          <p className="projects-view__empty-desc">
+            Створіть новий всесвіт і занурте читачів у вашу розповідь.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

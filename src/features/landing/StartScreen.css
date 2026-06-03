@@ -1,0 +1,244 @@
+/**
+ * StartScreen - Головний екран мага
+ * Cinematic dark theme з золотими акцентами
+ */
+
+.start-screen {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Background */
+.start-screen__background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* TODO: Replace with background-image: url('/assets/StartBack.jpg') when available */
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1520 50%, #0f0a15 100%);
+  /* Overlay gradient for better text readability */
+  background-blend-mode: multiply;
+}
+
+.start-screen__background::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 100%);
+}
+
+/* Logo Block - Top Left */
+.start-screen__logo {
+  position: absolute;
+  top: 32px;
+  left: 40px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.start-screen__tree {
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+}
+
+.start-screen__brand-name {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--tx-hi);
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.start-screen__brand-tagline {
+  font-size: 13px;
+  color: var(--tx-mid);
+  margin: 4px 0 0;
+  font-weight: 400;
+}
+
+/* Hero - Center */
+.start-screen__hero {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  max-width: 700px;
+  padding: 0 32px;
+  margin-top: -60px; /* Slightly above center */
+}
+
+.start-screen__title {
+  font-family: var(--font-heading);
+  font-size: 56px;
+  font-weight: 600;
+  color: var(--tx-hi);
+  margin: 0 0 20px;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.start-screen__subtitle {
+  font-size: 18px;
+  color: var(--tx-mid);
+  margin: 0 0 40px;
+  line-height: 1.6;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.start-screen__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 40px;
+  background: linear-gradient(135deg, var(--gold-1) 0%, var(--gold-2) 100%);
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--bg-0);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+}
+
+.start-screen__cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(212, 175, 55, 0.5);
+}
+
+.start-screen__cta:active {
+  transform: translateY(0);
+}
+
+/* Feature Cards */
+.start-screen__feature {
+  position: absolute;
+  z-index: 5;
+  padding: 24px 28px;
+  background: rgba(20, 20, 26, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  max-width: 320px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.start-screen__feature--left {
+  bottom: 80px;
+  left: 40px;
+}
+
+.start-screen__feature--right {
+  bottom: 120px;
+  right: 60px;
+}
+
+.start-screen__feature-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, var(--violet-1), var(--violet-2));
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--tx-hi);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+
+.start-screen__feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+  border-radius: 12px;
+  color: var(--bg-0);
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+}
+
+.start-screen__feature-title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--tx-hi);
+  margin: 0 0 12px;
+  line-height: 1.3;
+}
+
+.start-screen__feature-text {
+  font-size: 14px;
+  color: var(--tx-mid);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.start-screen__feature-btn {
+  margin-top: 16px;
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid var(--gold-1);
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gold-1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.start-screen__feature-btn:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--gold-2);
+  color: var(--gold-2);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .start-screen__feature--right {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .start-screen__title {
+    font-size: 40px;
+  }
+
+  .start-screen__subtitle {
+    font-size: 16px;
+  }
+
+  .start-screen__feature--left {
+    bottom: 40px;
+    left: 20px;
+    right: 20px;
+    max-width: none;
+  }
+
+  .start-screen__logo {
+    top: 20px;
+    left: 20px;
+  }
+
+  .start-screen__tree {
+    width: 36px;
+    height: 36px;
+  }
+
+  .start-screen__brand-name {
+    font-size: 22px;
+  }
+}
