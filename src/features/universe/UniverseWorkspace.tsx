@@ -6,7 +6,7 @@
  * TODO: filters, graph, edit mode (next session)
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, type ReactNode } from 'react';
 import { ArrowLeft, User, MapPin, Calendar, Users, Package, Search, ChevronDown, ArrowUpDown } from 'lucide-react';
 
 type SortOption = 'alphabetical' | 'confirmed-first' | 'inferred-first';
@@ -88,6 +88,26 @@ function getEntityDescription(entity: CanonEntityDisplay, category: UniverseCate
     default:
       return '';
   }
+}
+
+/**
+ * Highlight search term in text
+ */
+function highlightText(text: string, query: string): ReactNode {
+  if (!query.trim()) return text;
+
+  const regex = new RegExp(`(${query})`, 'gi');
+  const parts = text.split(regex);
+
+  return parts.map((part, i) =>
+    regex.test(part) ? (
+      <mark key={i} className="search-highlight">
+        {part}
+      </mark>
+    ) : (
+      part
+    )
+  );
 }
 
 export default function UniverseWorkspace({
@@ -328,9 +348,23 @@ export default function UniverseWorkspace({
       <div className="ws-split">
         {/* Main */}
         <div className="ws-main">
-          {entities.length === 0 ? (
+          {allEntities.length === 0 ? (
             <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--tx-mid)', fontStyle: 'italic' }}>
               Ще немає {info.label.toLowerCase()} в канону
+            </div>
+          ) : entities.length === 0 ? (
+            <div className="ws-empty">
+              <div className="ws-empty__icon">🔍</div>
+              <div className="ws-empty__title">Нічого не знайдено</div>
+              <div className="ws-empty__desc">
+                Спробуйте інший запит або змініть фільтри
+              </div>
+              <button
+                className="ws-empty__btn"
+                onClick={() => setSearchQuery('')}
+              >
+                Очистити пошук
+              </button>
             </div>
           ) : (
             <div className="wcards">
@@ -359,7 +393,9 @@ export default function UniverseWorkspace({
                     <div className="wcard__b">
                       <div className="wcard__row">
                         <div>
-                          <div className="ent-name">{entity.name}</div>
+                          <div className="ent-name">
+                            {highlightText(entity.name, searchQuery)}
+                          </div>
                           <div className="ent-sub">{getEntitySubtitle(entity, category)}</div>
                         </div>
                       </div>
