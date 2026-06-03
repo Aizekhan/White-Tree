@@ -2,12 +2,14 @@
  * UniverseWorkspace - workspace для категорій (персонажі/локації/події)
  * Джерело правди: WhiteWrite WorldTree.html ws-* classes
  *
- * MVP: header + mock cards + empty profile panel
- * TODO: real data from canon, filters, profile, graph (next session)
+ * Integration: Real data from project.canon
+ * TODO: filters, profile, graph (next session)
  */
 
 import { ArrowLeft, User, MapPin, Calendar, Users, Package } from 'lucide-react';
 import type { UniverseCategory } from './UniverseView';
+import { useUniverseCanon, type CanonEntityDisplay } from './useUniverseCanon';
+import type { CanonCharacter, CanonLocation, CanonEvent, CanonFaction, CanonArtifact } from '../../canon/canonTypes';
 
 interface UniverseWorkspaceProps {
   category: UniverseCategory;
@@ -23,12 +25,66 @@ const CATEGORY_INFO = {
   artifacts: { icon: Package, label: 'Артефакти', kicker: 'ARTIFACTS' },
 };
 
-// MOCK data (TODO: replace with real canon data)
+// MOCK data (fallback if no canon)
 const MOCK_CHARACTERS = [
   { id: 'marcus', name: 'Маркус Чен', role: 'Головний герой', motivation: 'Знайти сигнал...' },
   { id: 'elena', name: 'Елена Родрігес', role: 'Інженерка', motivation: 'Полагодити ретранслятори...' },
   { id: 'orion', name: 'Голос «Оріон»', role: 'Антагоніст', motivation: 'Веде відлік...' },
 ];
+
+/**
+ * Get card icon based on entity type
+ */
+function getEntityIcon(category: UniverseCategory) {
+  switch (category) {
+    case 'characters': return User;
+    case 'locations': return MapPin;
+    case 'events': return Calendar;
+    case 'factions': return Users;
+    case 'artifacts': return Package;
+    default: return User;
+  }
+}
+
+/**
+ * Get card subtitle based on entity type
+ */
+function getEntitySubtitle(entity: CanonEntityDisplay, category: UniverseCategory): string {
+  switch (category) {
+    case 'characters':
+      return (entity as CanonCharacter).role || 'Персонаж';
+    case 'locations':
+      return (entity as CanonLocation).atmos?.[0] || 'Локація';
+    case 'events':
+      return (entity as CanonEvent).when || 'Подія';
+    case 'factions':
+      return (entity as CanonFaction).motto || 'Фракція';
+    case 'artifacts':
+      return (entity as CanonArtifact).rarity || 'Артефакт';
+    default:
+      return '';
+  }
+}
+
+/**
+ * Get card description based on entity type
+ */
+function getEntityDescription(entity: CanonEntityDisplay, category: UniverseCategory): string {
+  switch (category) {
+    case 'characters':
+      return (entity as CanonCharacter).goal || (entity as CanonCharacter).trait || '';
+    case 'locations':
+      return (entity as CanonLocation).desc || '';
+    case 'events':
+      return (entity as CanonEvent).desc || '';
+    case 'factions':
+      return (entity as CanonFaction).desc || '';
+    case 'artifacts':
+      return (entity as CanonArtifact).desc || '';
+    default:
+      return '';
+  }
+}
 
 export default function UniverseWorkspace({
   category,
@@ -37,8 +93,17 @@ export default function UniverseWorkspace({
 }: UniverseWorkspaceProps) {
   const info = CATEGORY_INFO[category];
   const Icon = info.icon;
+  const CardIcon = getEntityIcon(category);
 
-  const mockData = category === 'characters' ? MOCK_CHARACTERS : [];
+  const { getEntities, getCount, hasCanon } = useUniverseCanon();
+
+  // Use real canon data if available, otherwise fallback to MOCK
+  const realEntities = getEntities(category);
+  const entities = hasCanon && realEntities.length > 0
+    ? realEntities
+    : (category === 'characters' ? MOCK_CHARACTERS : []);
+
+  const count = hasCanon ? getCount(category) : entities.length;
 
   return (
     <div className="ws">
@@ -62,34 +127,40 @@ export default function UniverseWorkspace({
 
         <div className="ws-head__sp" />
 
-        <div className="ws-count">{mockData.length} items</div>
+        <div className="ws-count">{count} items</div>
       </div>
 
       {/* Split: Main + Aside */}
       <div className="ws-split">
         {/* Main */}
         <div className="ws-main">
-          <div className="wcards">
-            {mockData.map((char) => (
-              <div key={char.id} className="wcard">
-                <div className="wcard__media">
-                  <div className="wcard__scrim" />
-                  <div className="wcard__ic">
-                    <User size={17} />
-                  </div>
-                </div>
-                <div className="wcard__b">
-                  <div className="wcard__row">
-                    <div>
-                      <div className="ent-name">{char.name}</div>
-                      <div className="ent-sub">{char.role}</div>
+          {entities.length === 0 ? (
+            <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--tx-mid)', fontStyle: 'italic' }}>
+              Ще немає {info.label.toLowerCase()} в канону
+            </div>
+          ) : (
+            <div className="wcards">
+              {entities.map((entity) => (
+                <div key={entity.id} className="wcard">
+                  <div className="wcard__media">
+                    <div className="wcard__scrim" />
+                    <div className="wcard__ic">
+                      <CardIcon size={17} />
                     </div>
                   </div>
-                  <div className="wcard__blurb">{char.motivation}</div>
+                  <div className="wcard__b">
+                    <div className="wcard__row">
+                      <div>
+                        <div className="ent-name">{entity.name}</div>
+                        <div className="ent-sub">{getEntitySubtitle(entity, category)}</div>
+                      </div>
+                    </div>
+                    <div className="wcard__blurb">{getEntityDescription(entity, category)}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Aside (Profile) */}
