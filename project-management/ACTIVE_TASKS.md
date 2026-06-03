@@ -94,11 +94,9 @@
 - `src/features/universe/EditableField.tsx` (NEW - inline editing component)
 
 **Remaining Tasks:**
-- [ ] **Graph view** (visualize entity relationships via D3.js)
-- [ ] **Relations editor** (edit character relationships inline)
-- [ ] **Relations graph** (interactive visualization of canon links)
 - [ ] **Reconstruction overlay** (show affected scenes on entity change)
 - [ ] **Batch operations** (select multiple entities for bulk actions)
+- [ ] **D3.js force-directed graph** (advanced visualization - optional)
 
 **Status:** Core + Advanced UI ✅ COMPLETE | Graph view + Edit mode ⏳ PENDING
 

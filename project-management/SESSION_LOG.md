@@ -4,6 +4,117 @@
 
 ---
 
+## 📅 Session 11 (Continuation 3): UI Port — Universe Relations Editor + Graph Complete ✅
+**Date:** 2026-06-03
+**Duration:** ~1.5 години (continuation session)
+**AI Agent:** Claude Code (Sonnet 4.5)
+**Human:** Aizekhan
+
+### What We Did
+- [x] **Relations Editor (Phase 4.10)**
+  - Created RelationsEditor.tsx component (169 lines)
+  - Inline add/edit/delete relations for characters
+  - Form with kind + tone inputs
+  - Delete button (trash icon) for each relation
+  - Read-only view when editMode=false
+  - Empty state ("Немає зв'язків")
+  - Plus button to trigger add form
+  - Removed duplicate Relations block from CharacterProfile
+- [x] **Relations Graph (Phase 4.11)**
+  - Created RelationsGraph.tsx component (220 lines)
+  - Extract all relations from canon
+  - Display as source → target cards with arrows
+  - Filter by entity type (All, Characters, Locations, Events)
+  - Visual labels for kind + tone on arrows
+  - Empty states (no canon, no relations, no filter results)
+  - Stats display (X зв'язків)
+- [x] **UniverseView Integration**
+  - Added view state: 'tree' | 'graph'
+  - handleViewChange to switch views
+  - Conditional rendering (tree vs graph)
+  - Imports useStoryStore for canon access
+- [x] **WorldTreeStage Enhancement**
+  - Added "Граф Зв'язків" button (bottom-right floating)
+  - Network icon with hover effects
+  - onViewChange prop
+- [x] **Styles** (+407 lines total)
+  - Relations Editor: .relations-list, .relation-item, .relation-form, .relation-input
+  - Relations Graph: .relations-graph, .relation-card, .relation-node, .relation-arrow
+  - View Toggle: .wt-view-toggle, .tree-graph-btn
+  - Filter buttons: .filter-btn with active state
+
+### 🎉 WHAT GAVE WOW EFFECT
+- **Relations Editor inline UX** — add/delete relations without modal, directly in profile
+- **Visual graph connections** — source → kind/tone → target with arrow flow
+- **Filter by type** — instantly see relations for specific entity types
+- **Floating graph button** — elegant transition from tree to graph view
+- **Empty state clarity** — different messages for "no canon", "no relations", "no filter results"
+- **Type-safe relation extraction** — handles all entity types uniformly
+
+### ⚠️ WHAT WAS TIME WASTE
+- Жодних часових втрат — implementation була логічна та послідовна
+
+### 📸 Visual Milestones (Screenshot Commits)
+- Commit `80313de`: Relations Editor for Character profiles (Phase 4.10)
+- Commit `402b433`: Relations Graph visualization (Phase 4.11)
+
+### Key Decisions Made
+- **Relations Editor as separate component** — reusable for other entity types in future
+- **Simple list-based graph** — не D3.js (складно), а карточки з візуальними стрілками
+- **View toggle pattern** — tree ↔ graph switch замість tabs
+- **Filter at graph level** — не в окремому header, а integrated в graph component
+- **targetId optional** — relations можуть не мати targetId (просто text description)
+
+### Code Changes
+**Files Created:**
+- `src/features/universe/RelationsEditor.tsx` (169 lines) — inline relations editor
+- `src/features/universe/RelationsGraph.tsx` (220 lines) — graph visualization
+
+**Files Modified:**
+- `src/features/universe/EntityProfile.tsx` (+handler, -duplicate, +import)
+- `src/features/universe/UniverseView.tsx` (+view state, +conditional rendering)
+- `src/features/universe/WorldTreeStage.tsx` (+graph button, +onViewChange prop)
+- `src/features/universe/UniverseView.css` (+407 lines styles)
+
+**Total:**
+- Files Created: 2 (389 lines)
+- Files Modified: 4 (+407 styles + logic changes)
+
+### Insights
+
+**Technical:**
+- **Relations extraction pattern** — flatten all entity.relations into RelationDisplay[]
+- **Type narrowing for targets** — getEntityById searches across all entity types
+- **Filter with useMemo** — performance optimization for large relation lists
+- **Arrow visual with label** — positioned absolutely above line
+
+**Product/UX:**
+- **Graph shows connection flow** — not just list, but visual source → target
+- **Filter makes sense** — when many relations, filtering by type helps clarity
+- **Empty states guide user** — "додайте зв'язки у режимі редагування"
+- **Consistent Ukrainian language** — всі UI тексти українською
+
+### Blockers / Issues
+- **Жодних блокерів** — Relations Editor + Graph працюють end-to-end
+
+### Next Steps (Universe)
+1. **Reconstruction overlay** — show affected scenes when entity changes (advanced)
+2. **Batch operations** — select multiple entities for bulk actions (optional)
+3. **D3.js force-directed graph** — advanced visualization (optional upgrade)
+
+**OR proceed to Director Screen:**
+- Universe core features ✅ COMPLETE
+- Director screen awaiting implementation
+
+### Important Notes
+- **Universe Status:** Tree ✅ + Workspace ✅ + Cards ✅ + Profile ✅ + Filters ✅ + Sort ✅ + Badges ✅ + Edit ✅ + Relations Editor ✅ + Graph ✅
+- **Remaining:** Reconstruction overlay (advanced) + Batch operations (optional)
+- **Next:** Director screen або reconstruction overlay
+- **Commits pushed** to `feature/cinematic-ui-transformation` branch
+- **Commits:** `80313de`, `402b433`
+
+---
+
 ## 📅 Session 11 (Continuation 2): UI Port — Universe Edit Mode Complete ✅
 **Date:** 2026-06-03
 **Duration:** ~1 година (continuation session)
